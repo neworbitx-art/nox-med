@@ -193,12 +193,12 @@ export default function IntegratedTimeline() {
               <div style={{ height: 230 }} role="img" aria-label="Scatter of preceding-24h mean cabin CO2 versus blood pCO2">
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart margin={{ top: 8, right: 12, left: 0, bottom: 22 }}>
-                    <CartesianGrid stroke="#243557" />
+                    <CartesianGrid stroke="#1B222C" />
                     <XAxis type="number" dataKey="x" name="Cabin CO₂ (24 h mean)" domain={["auto", "auto"]} tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={6} tickFormatter={(v: number) => v.toFixed(1)}
                       label={{ value: "Cabin CO₂ partial pressure, 24 h mean (mmHg, ambient air)", position: "insideBottom", offset: -12, fill: "#A8B8D8", fontSize: 10 }} />
                     <YAxis type="number" dataKey="y" name="Blood pCO₂" domain={["auto", "auto"]} tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={6} width={46}
                       label={{ value: "Blood pCO₂ (mmHg)", angle: -90, position: "insideLeft", fill: "#A8B8D8", fontSize: 10 }} />
-                    <Tooltip cursor={{ strokeDasharray: "3 3" }} contentStyle={{ fontSize: 12, borderRadius: 2, border: "1px solid #35476B" }} />
+                    <Tooltip cursor={{ strokeDasharray: "3 3" }} contentStyle={{ fontSize: 12, borderRadius: 2, border: "1px solid #2B3440" }} />
                     <Scatter data={scatter} fill={CREW_COLORS[selectedId]} isAnimationActive={false} />
                   </ScatterChart>
                 </ResponsiveContainer>

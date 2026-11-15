@@ -22,18 +22,18 @@ export function MissionSelector({ dark = false, onChange }: { dark?: boolean; on
   return (
     <div ref={root} className="relative" data-testid="mission-selector" data-selected={missionId}>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open} aria-label={`Mission: ${cur.code} ${cur.name}. Change mission`}
-        className={`flex items-center gap-2 rounded-sm border px-2.5 py-1.5 text-left text-[12px] ${dark ? "border-white/20 bg-black/40 text-slate-100 hover:border-white/40" : "border-line bg-bg2 text-ink hover:border-accent/60"}`}>
+        className="g-btn flex items-center gap-2 px-3 py-1.5 text-left text-[12px]" data-on={open}>
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-accent">Mission</span>
         <span className="num font-semibold">{cur.code}</span><span className="hidden text-mute sm:inline">{cur.name}</span>
         <ChevronDown size={14} className="text-mute" />
       </button>
       {open && (
-        <ul role="listbox" aria-label="Select mission" className="absolute left-0 top-full z-[60] mt-1 w-[320px] max-w-[88vw] border border-line bg-[#0E1735] shadow-xl">
+        <ul role="listbox" aria-label="Select mission" className="g-menu absolute left-0 top-full z-[60] mt-2 w-[330px] max-w-[88vw]">
           {MISSIONS.map((m) => {
             const sel = m.id === missionId, ship = shipHealthFor(m);
             return (
-              <li key={m.id} role="option" aria-selected={sel}>
-                <button type="button" onClick={() => pick(m.id)} data-mission-option={m.id} className={`flex w-full items-start gap-2 border-l-2 px-3 py-2 text-left hover:bg-white/5 ${sel ? "border-accent bg-accent/10" : "border-transparent"}`}>
+              <li key={m.id} role="option" aria-selected={sel} className="g-item">
+                <button type="button" onClick={() => pick(m.id)} data-mission-option={m.id} className="flex w-full items-start gap-2 px-3 py-2.5 text-left">
                   <span className="mt-1"><StatusDot level={ship.overall} /></span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="num">{m.code}</span>{m.name}{sel && <Check size={13} className="text-accent" />}</span>

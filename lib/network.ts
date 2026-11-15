@@ -82,7 +82,7 @@ export function netPoint(tr: Trajectory, p: TrajPoint, ms: number): V3 {
       const moonDisp = compE(rotZ(p.moonGeo, th)), s = Math.min(1, p.captureBlend * 1.6), k = s * s * (3 - 2 * s);
       const dir = p.phase === "Lunar orbit" && p.moonRel ? rotZ(unit(p.moonRel), th) : c.entry ?? unit(rotZ(p.moonRel!, th));
       const target = add(moonDisp, mul(dir, NET.ringR)), base = compE(rel);
-      const mixP = toEarth(add(mul(base, 1 - k), mul(target, k))), moonP = toEarth(moonDisp), off = sub(mixP, moonP), dn = norm(off), min = NET.moonR * 1.35;
+      const mixP = toEarth(add(mul(base, 1 - k), mul(target, k))), moonP = toEarth(moonDisp), off = sub(mixP, moonP), dn = norm(off), min = NET.moonR * 2.1;
       // keep the vehicle outside the (exaggerated) Moon sphere during the schematic approach
       return dn < min ? add(moonP, mul(dn > 1e-9 ? unit(off) : unit(sub(toEarth(target), moonP)), min)) : mixP;
     }

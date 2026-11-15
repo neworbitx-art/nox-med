@@ -31,7 +31,7 @@ export function SimChart({ title, unit, decimals, points, withheld = [], now, du
       <div style={{ height }} role="img" aria-label={`${title} over simulated time`}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart margin={{ top: 6, right: 10, left: 0, bottom: xLabel ? 16 : 2 }}>
-            <CartesianGrid stroke="#243557" />
+            <CartesianGrid stroke="#1B222C" />
             <XAxis dataKey="t" type="number" domain={[0, duration]} ticks={ticks} allowDataOverflow tickFormatter={(v: number) => `${v}`} tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={5}
               label={xLabel ? { value: "Minutes from scenario start", position: "insideBottom", offset: -10, fill: "#A8B8D8", fontSize: 10 } : undefined} />
             <YAxis type="number" domain={yDomain} allowDataOverflow tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={5} width={44}
@@ -41,7 +41,7 @@ export function SimChart({ title, unit, decimals, points, withheld = [], now, du
             <ReferenceLine x={now} stroke="#F7FAFF" strokeOpacity={0.45} strokeDasharray="2 2" />
             <Line data={points} dataKey="v" type="monotone" stroke={color} strokeWidth={1.8} dot={dots ? { r: 3, fill: color, stroke: color } : false} isAnimationActive={false} connectNulls={false} />
             {withheld.length > 0 && <Line data={withheld} dataKey="v" stroke="none" isAnimationActive={false} legendType="none"
-              dot={{ r: 4, fill: "#172342", stroke: "#F87171", strokeWidth: 1.6 }} activeDot={false} />}
+              dot={{ r: 4, fill: "#0A0D12", stroke: "#F87171", strokeWidth: 1.6 }} activeDot={false} />}
           </ComposedChart>
         </ResponsiveContainer>
       </div>

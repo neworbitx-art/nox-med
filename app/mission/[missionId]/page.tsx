@@ -96,7 +96,7 @@ export default function MissionOverview() {
         <div className="space-y-3">
           <Card title="Anatomical systems" subtitle="Select a system. Its layer and related measurements load for the selected crew member.">
             <BodySystemSelector value={system} onChange={setSystem} systems={OVERVIEW_SYSTEMS} />
-            <div className="relative mt-3 h-[520px] border border-line bg-[#0B1430]" data-testid="viewer" data-system={system} data-functional={atlasOn}>
+            <div className="relative mt-3 h-[520px] border border-line bg-[#05080C]" data-testid="viewer" data-system={system} data-functional={atlasOn}>
               <BodyAtlas system={bound} onSelect={(s) => setSystem(s)} reduced={reduced} />
               {!atlasOn && <div className="absolute inset-x-3 bottom-3 border border-dashed border-line bg-bg/90 p-3 text-center" data-testid="coming-soon"><p className="text-[13px] font-semibold text-ink">{sysDef.label}: future module</p><p className="text-[11px] text-mute">No layer or linked measurements are defined for this system yet. The illustration shows the cardiovascular layer for orientation only.</p></div>}
             </div>

@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 export type Variant = "transit" | "cislunar" | "station" | "relay";
+/** Vehicle look by route: Mars missions use a Starship-class stainless vehicle, Earth/lunar missions an Orion-class crew capsule + service module (generic procedural models; no real markings or affiliation). */
 const VARIANT: Record<string, Variant> = { "earth-mars-transfer": "transit", "lunar-transfer": "cislunar", "earth-orbit": "station", "mars-orbit": "relay" };
 export const variantFor = (routeKind: string): Variant => VARIANT[routeKind] ?? "transit";
 
@@ -38,62 +39,60 @@ function Wing({ panels = 3, w = 0.34, h = 0.15 }: { panels?: number; w?: number;
   );
 }
 
-function Dish({ r = 0.08 }: { r?: number }) {
+const steel = new THREE.MeshStandardMaterial({ color: "#9aa1aa", metalness: 0.7, roughness: 0.42 });
+const flapMat = new THREE.MeshStandardMaterial({ color: "#7d848d", metalness: 0.6, roughness: 0.5, side: THREE.DoubleSide });
+const tile = new THREE.MeshStandardMaterial({ color: "#15181d", metalness: 0.3, roughness: 0.75, side: THREE.DoubleSide });
+const white = new THREE.MeshStandardMaterial({ color: "#e9edf2", metalness: 0.35, roughness: 0.4 });
+const foil = new THREE.MeshStandardMaterial({ color: "#c79a4a", metalness: 0.75, roughness: 0.38 });
+
+const flapShape = (L: number, H: number, sweep: number) => { const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(L, 0); sh.lineTo(L * 0.82 - sweep, H); sh.lineTo(L * 0.12, H * 0.78); sh.closePath(); return sh; };
+const mkFlap = (L: number, H: number, sw: number, d: number) => new THREE.ExtrudeGeometry(flapShape(L, H, sw), { depth: d, bevelEnabled: false });
+const fwdFlap = mkFlap(0.07, 0.06, 0.012, 0.004), aftFlap = mkFlap(0.13, 0.095, 0.02, 0.004);
+const fwdFlapEdge = mkFlap(0.07, 0.016, 0.0, 0.002), aftFlapEdge = mkFlap(0.13, 0.022, 0.0, 0.002);
+/** Starship-class: stainless cylinder, ogive nose, dark belly heat shield, two fore and two aft flaps, engine skirt. Long axis +X. */
+function Starship() {
+  const R = 0.085;
+  const nose = useMemo(() => { const pts: THREE.Vector2[] = []; for (let i = 0; i <= 24; i++) { const t = i / 24; pts.push(new THREE.Vector2(R * Math.pow(1 - t * t, 0.62), t * 0.3)); } return new THREE.LatheGeometry(pts, 40); }, []);
+  useMemo(() => () => nose.dispose(), [nose]);
   return (
     <group>
-      <mesh rotation={[Math.PI, 0, 0]} material={hull}><coneGeometry args={[r, r * 0.35, 28, 1, true]} /></mesh>
-      <mesh position={[0, -0.04, 0]} material={hullDark}><cylinderGeometry args={[0.006, 0.006, 0.08, 6]} /></mesh>
+      <mesh position={[-0.06, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={steel}><cylinderGeometry args={[R, R, 0.56, 40]} /></mesh>
+      <mesh position={[0.22, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={steel} geometry={nose} />
+      <mesh position={[-0.06, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={tile}><cylinderGeometry args={[R * 1.012, R * 1.012, 0.56, 32, 1, true, -Math.PI, Math.PI]} /></mesh>
+      <mesh position={[0.24, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={tile}><sphereGeometry args={[R * 0.985, 24, 12, 0, Math.PI * 2, 0, 0.55]} /></mesh>
+      {[0.1, 0.2, 0.3, 0.4, 0.5].map((x) => <mesh key={x} position={[-0.34 + x, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><torusGeometry args={[R * 1.004, 0.0012, 6, 40]} /></mesh>)}
+      {[1, -1].map((k) => (
+        <group key={k}>
+          <mesh position={[0.15, k * R * 0.96, 0]} scale={[1, k, 1]} material={flapMat} geometry={fwdFlap} />
+          <mesh position={[-0.3, k * R * 0.96, 0]} scale={[1, k, 1]} material={flapMat} geometry={aftFlap} />
+          <mesh position={[0.15, k * R * 0.96, 0.0035]} scale={[1, k, 1]} material={tile} geometry={fwdFlapEdge} />
+          <mesh position={[-0.3, k * R * 0.96, 0.0035]} scale={[1, k, 1]} material={tile} geometry={aftFlapEdge} />
+        </group>
+      ))}
+      <mesh position={[-0.35, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={tile}><cylinderGeometry args={[R * 0.97, R * 0.92, 0.04, 32]} /></mesh>
+      {[[0, 0], [0.032, 0.02], [-0.032, 0.02], [0.016, -0.03], [-0.016, -0.03]].map(([y, z], i) => <mesh key={i} position={[-0.385, y, z]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><coneGeometry args={[0.016, 0.035, 12, 1, true]} /></mesh>)}
     </group>
   );
 }
 
-/** Credible simplified fictional vehicles (modules + solar arrays). Not a representation of any real or NASA vehicle. Long axis = +X. */
-function Body({ variant }: { variant: Variant }) {
-  if (variant === "transit") return (
-    <group>
-      <mesh rotation={[0, 0, Math.PI / 2]} material={hull}><cylinderGeometry args={[0.11, 0.11, 0.55, 32]} /></mesh>
-      <mesh position={[0.34, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={hullDark}><coneGeometry args={[0.11, 0.13, 32]} /></mesh>
-      <mesh position={[-0.31, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={gold}><cylinderGeometry args={[0.14, 0.14, 0.05, 32]} /></mesh>
-      <mesh position={[-0.42, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><cylinderGeometry args={[0.07, 0.07, 0.17, 24]} /></mesh>
-      <mesh position={[-0.52, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={hullDark}><coneGeometry args={[0.06, 0.1, 20, 1, true]} /></mesh>
-      <mesh position={[0.05, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={frame}><torusGeometry args={[0.118, 0.01, 8, 32]} /></mesh>
-      <group position={[-0.05, 0, 0]}><group position={[0, 0.11, 0]}><Wing panels={4} w={0.3} h={0.16} /></group><group position={[0, -0.11, 0]} rotation={[0, 0, Math.PI]}><Wing panels={4} w={0.3} h={0.16} /></group></group>
-      <group position={[0.18, 0.1, 0.07]} rotation={[0.6, 0, 0.4]}><Dish r={0.07} /></group>
-    </group>
-  );
-  if (variant === "cislunar") return (
-    <group>
-      <mesh position={[0.2, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={hull}><coneGeometry args={[0.12, 0.2, 32]} /></mesh>
-      <mesh position={[0.06, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><cylinderGeometry args={[0.12, 0.12, 0.03, 32]} /></mesh>
-      <mesh position={[-0.12, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hull}><cylinderGeometry args={[0.12, 0.12, 0.32, 32]} /></mesh>
-      <mesh position={[-0.32, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={gold}><coneGeometry args={[0.06, 0.1, 20, 1, true]} /></mesh>
-      <group position={[-0.1, 0, 0]}><group position={[0, 0.12, 0]}><Wing panels={3} w={0.26} h={0.15} /></group><group position={[0, -0.12, 0]} rotation={[0, 0, Math.PI]}><Wing panels={3} w={0.26} h={0.15} /></group></group>
-      <group position={[0.0, 0.0, 0.12]} rotation={[Math.PI / 2, 0, 0]}><Dish r={0.06} /></group>
-    </group>
-  );
-  if (variant === "station") return (
-    <group>
-      <mesh material={frame}><boxGeometry args={[0.95, 0.02, 0.02]} /></mesh>
-      <mesh position={[-0.12, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hull}><cylinderGeometry args={[0.07, 0.07, 0.3, 24]} /></mesh>
-      <mesh position={[0.14, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hull}><cylinderGeometry args={[0.065, 0.065, 0.26, 24]} /></mesh>
-      <mesh position={[0.02, 0.09, 0]} material={hullDark}><sphereGeometry args={[0.055, 20, 14]} /></mesh>
-      <mesh position={[0.02, -0.09, 0]} material={hullDark}><sphereGeometry args={[0.055, 20, 14]} /></mesh>
-      {[-0.4, -0.22, 0.22, 0.4].map((x) => (
-        <group key={x} position={[x, 0, 0]}><group position={[0, 0.0, 0]}><Wing panels={2} w={0.14} h={0.2} /></group><group rotation={[0, 0, Math.PI]}><Wing panels={2} w={0.14} h={0.2} /></group></group>
-      ))}
-      <mesh position={[0, 0, 0.1]} material={hull}><boxGeometry args={[0.2, 0.012, 0.1]} /></mesh>
-    </group>
-  );
+/** Orion-class: conical crew module with heat shield, service module with gold-foil band, engine bell and four X-configured solar array wings. Long axis +X. */
+function Orion() {
   return (
-    <group>
-      <mesh material={hull}><boxGeometry args={[0.28, 0.16, 0.16]} /></mesh>
-      <mesh position={[0.17, 0, 0]} material={gold}><boxGeometry args={[0.06, 0.15, 0.15]} /></mesh>
-      <group position={[0, 0, 0]}><group position={[0, 0.08, 0]}><Wing panels={3} w={0.22} h={0.17} /></group><group position={[0, -0.08, 0]} rotation={[0, 0, Math.PI]}><Wing panels={3} w={0.22} h={0.17} /></group></group>
-      <group position={[0.05, 0, 0.1]} rotation={[Math.PI / 2, 0, 0]}><Dish r={0.13} /></group>
-      <mesh position={[-0.2, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><cylinderGeometry args={[0.03, 0.05, 0.1, 16]} /></mesh>
+    <group scale={1.55}>
+      <mesh position={[0.2, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={white}><cylinderGeometry args={[0.04, 0.1, 0.15, 40]} /></mesh>
+      <mesh position={[0.282, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={hullDark}><cylinderGeometry args={[0.03, 0.036, 0.012, 24]} /></mesh>
+      <mesh position={[0.122, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={tile}><cylinderGeometry args={[0.1, 0.106, 0.016, 40]} /></mesh>
+      <mesh position={[0.1, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={frame}><cylinderGeometry args={[0.104, 0.104, 0.024, 32]} /></mesh>
+      <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={white}><cylinderGeometry args={[0.098, 0.098, 0.2, 40]} /></mesh>
+      <mesh position={[0.045, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={foil}><cylinderGeometry args={[0.1, 0.1, 0.05, 40, 1, true]} /></mesh>
+      <mesh position={[-0.145, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={hullDark}><coneGeometry args={[0.042, 0.075, 24, 1, true]} /></mesh>
+      {[45, 135, 225, 315].map((a) => (<group key={a} rotation={[(a * Math.PI) / 180, 0, 0]} position={[-0.03, 0, 0]}><Wing panels={3} w={0.1} h={0.08} /></group>))}
     </group>
   );
 }
+
+/** Model at the parent's origin. The parent group positions, orients (long axis = +X) and scales it. */
+function Body({ variant }: { variant: Variant }) { return variant === "transit" || variant === "relay" ? <Starship /> : <Orion />; }
 
 export interface SpacecraftProps { variant: Variant; emphasis: "active" | "selected" | "idle" | "dim"; accent: string; reduced: boolean }
 

@@ -19,7 +19,7 @@ export default function About() {
       <PageHeader title="About / Data Sources" desc="Where the information in NOX MED comes from and how much to trust it." />
       <div className="grid max-w-3xl gap-3 text-[13px] text-ink2">
         <Card title="Fictional missions">
-          <p>NOX-01 to NOX-04, their crews, vehicles and parameters are fictional. They are not NASA missions and do not describe real people or spacecraft. Only the session mission (NOX-01) has crew-level records and spacecraft telemetry; every other mission shows an explicit empty state, never borrowed values.</p>
+          <p>NOX-01 to NOX-04, their crews, vehicles and parameters are fictional. They are not NASA or SpaceX missions and do not describe real people or spacecraft. Vehicle icons are generic procedural 3D shapes inspired by an Orion-class crew capsule with service module (Earth and lunar missions) and a Starship-class stainless vehicle (Mars missions); they carry no real markings, telemetry or affiliation. Only the session mission (NOX-01) has crew-level records and spacecraft telemetry; every other mission shows an explicit empty state, never borrowed values.</p>
         </Card>
         <Card title="Data provenance labels">
           <ul className="space-y-1.5">{PROVENANCE.map(([k, tone, d]) => <li key={k} className="flex gap-2"><span className="w-40 shrink-0"><Tag tone={tone}>{k}</Tag></span><span>{d}</span></li>)}</ul>

@@ -52,7 +52,7 @@ export default function Twin() {
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="space-y-3">
             <Card title="Cardiovascular atlas" subtitle={`${meshes || MODEL_INFO.meshCount} selectable structures · ${MODEL_INFO.source}`}>
-              <div className="relative h-[420px] border border-line bg-[#0B1430]" data-testid="viewer" data-status={status} data-mesh-count={meshes}>
+              <div className="relative h-[420px] border border-line bg-[#05080C]" data-testid="viewer" data-status={status} data-mesh-count={meshes}>
                 {status !== "no-webgl" && status !== "error" && (
                   <AnatomyViewer selected={selected} hovered={hovered} opacity={opacity} isolate={isolate} highlightGroup={group} showLabels={labels}
                     resetSignal={reset} zoomSignal={zoom} onSelect={setSelected} onHover={setHovered} onStatus={onStatus} reducedMotion={reduced} />

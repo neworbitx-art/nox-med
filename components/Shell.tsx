@@ -70,7 +70,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {open && (
           <div className="fixed inset-0 z-50">
             <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-            <div className="absolute inset-y-0 left-0 w-64 border-r border-line bg-bg2 shadow-xl">
+            <div className="absolute inset-y-0 left-0 w-64 glass !rounded-none !rounded-r-3xl">
               <div className="flex items-center justify-between pr-3"><Brand /><button aria-label="Close menu" onClick={() => setOpen(false)}><X size={18} /></button></div>
               {nav}
             </div>
@@ -89,7 +89,7 @@ export function Shell({ children }: { children: ReactNode }) {
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 bg-bg2">
+          <div className="absolute inset-y-0 left-0 w-64 glass !rounded-none !rounded-r-3xl">
             <div className="flex items-center justify-between pr-3"><Brand /><button aria-label="Close menu" onClick={() => setOpen(false)}><X size={18} /></button></div>
             {nav}
           </div>
@@ -97,10 +97,10 @@ export function Shell({ children }: { children: ReactNode }) {
       )}
 
       <div className="min-w-0">
-        <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur" data-testid="app-header" data-mission={m.id}>
+        <header className="sticky top-0 z-30 glass-bar" data-testid="app-header" data-mission={m.id}>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2">
             <button className="lg:hidden" aria-label="Open menu" onClick={() => setOpen(true)}><Menu size={20} /></button>
-            <Link href="/" className="flex items-center gap-1.5 rounded-sm border border-line px-2 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2 hover:border-accent/60 hover:text-ink" data-testid="back-navigator"><ArrowLeft size={13} /> Navigator</Link>
+            <Link href="/" className="g-btn flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em]" data-testid="back-navigator"><ArrowLeft size={13} /> Navigator</Link>
             <MissionSelector />
             <div className="num flex flex-wrap items-center gap-x-3 text-[11px] font-semibold uppercase tracking-[0.08em]">
               <span className="text-accent">Day {m.vehicle.day}/{m.vehicle.totalDays}</span><span className="hidden text-line sm:inline">|</span>
@@ -110,7 +110,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="ml-auto flex flex-wrap items-center gap-1" role="group" aria-label="Crew of selected mission" data-testid="crew-switch">
               {crew.map((c) => c.astronaut && m.hasCrewData ? (
                 <button key={c.code} onClick={() => select(c.astronaut!.id)} aria-pressed={c.astronaut.id === selectedId} title={`${c.code} · ${c.role}`}
-                  className={`num flex items-center gap-1.5 rounded-sm border px-2 py-1 text-xs ${c.astronaut.id === selectedId ? "border-accent bg-accent text-bg" : "border-line bg-panel text-ink2 hover:bg-bg2"}`}>
+                  data-on={c.astronaut.id === selectedId} className="g-btn num flex items-center gap-1.5 px-2.5 py-1 text-xs">
                   <span className="h-2 w-2 rounded-full border border-white/50" style={{ background: CREW_COLORS[c.astronaut.id] }} />{c.code}
                 </button>
               ) : (

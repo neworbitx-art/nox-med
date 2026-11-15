@@ -24,7 +24,7 @@ export function TrendChart({ data, series, xKey = "day", xLabel = "Mission day",
     <div style={{ height }} role="img" aria-label={`Trend chart: ${series.map((s) => s.label).join(", ")}`}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: hasRight ? 4 : 12, left: 0, bottom: 14 }}>
-          <CartesianGrid stroke="#243557" />
+          <CartesianGrid stroke="#1B222C" />
           <XAxis dataKey={xKey} type="number" domain={["dataMin", "dataMax"]} tick={{ fill: "#A8B8D8", fontSize: 11 }} stroke="#7F90B5" tickSize={6}
             label={{ value: xLabel, position: "insideBottom", offset: -8, fill: "#A8B8D8", fontSize: 11 }} />
           <YAxis yAxisId="left" domain={domain ?? ["auto", "auto"]} tick={{ fill: "#A8B8D8", fontSize: 11 }} stroke="#7F90B5" tickSize={6} width={48}
@@ -36,7 +36,7 @@ export function TrendChart({ data, series, xKey = "day", xLabel = "Mission day",
           {lines?.map((l) => (
             <ReferenceLine key={`${l.label}-${l.y}`} yAxisId="left" y={l.y} stroke={l.color} strokeDasharray="5 4" label={{ value: l.label, fill: l.color, fontSize: 10, position: "insideTopRight" }} />
           ))}
-          <Tooltip contentStyle={{ background: "#172342", border: "1px solid #35476B", borderRadius: 2, fontSize: 12, color: "#F7FAFF" }} labelStyle={{ color: "#A8B8D8" }}
+          <Tooltip contentStyle={{ background: "#0A0D12", border: "1px solid #2B3440", borderRadius: 2, fontSize: 12, color: "#F7FAFF" }} labelStyle={{ color: "#A8B8D8" }}
             labelFormatter={(l) => `${xLabel} ${l}`} formatter={(v) => (typeof v === "number" ? Number(v.toFixed(decimals + 1)) : v)} />
           {series.length > 1 && <Legend wrapperStyle={{ fontSize: 12 }} />}
           {series.map((s) => (

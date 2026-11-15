@@ -54,11 +54,11 @@ export function BodyAtlas({ system, onSelect, reduced, showLabels = true }: { sy
         <svg viewBox="0 0 360 600" style={layer(0)} role="img" aria-label="Generic adult torso, anterior view. The patient's right is on the viewer's left.">
           {defs}
           <g filter={sh}>
-            <path d="M100 148 Q140 128 164 126 L196 126 Q220 128 260 148 Q276 220 270 330 Q268 400 280 452 L236 462 L224 600 L190 600 L180 470 L170 470 L160 600 L126 600 L118 462 L80 452 Q92 400 90 330 Q84 220 100 148 Z" fill="url(#gBody)" stroke="#35476B" strokeWidth="1.2" />
-            <path d="M100 148 Q72 160 66 230 L56 362 L78 368 L92 252 Q98 200 108 172 Z" fill="url(#gBody)" stroke="#35476B" strokeWidth="1.2" />
-            <path d="M260 148 Q288 160 294 230 L304 362 L282 368 L268 252 Q262 200 252 172 Z" fill="url(#gBody)" stroke="#35476B" strokeWidth="1.2" />
-            <ellipse cx="180" cy="62" rx="34" ry="42" fill="url(#gBody)" stroke="#35476B" strokeWidth="1.2" />
-            <rect x="164" y="100" width="32" height="30" rx="8" fill="url(#gBody)" stroke="#35476B" strokeWidth="1" />
+            <path d="M100 148 Q140 128 164 126 L196 126 Q220 128 260 148 Q276 220 270 330 Q268 400 280 452 L236 462 L224 600 L190 600 L180 470 L170 470 L160 600 L126 600 L118 462 L80 452 Q92 400 90 330 Q84 220 100 148 Z" fill="url(#gBody)" stroke="#2B3440" strokeWidth="1.2" />
+            <path d="M100 148 Q72 160 66 230 L56 362 L78 368 L92 252 Q98 200 108 172 Z" fill="url(#gBody)" stroke="#2B3440" strokeWidth="1.2" />
+            <path d="M260 148 Q288 160 294 230 L304 362 L282 368 L268 252 Q262 200 252 172 Z" fill="url(#gBody)" stroke="#2B3440" strokeWidth="1.2" />
+            <ellipse cx="180" cy="62" rx="34" ry="42" fill="url(#gBody)" stroke="#2B3440" strokeWidth="1.2" />
+            <rect x="164" y="100" width="32" height="30" rx="8" fill="url(#gBody)" stroke="#2B3440" strokeWidth="1" />
           </g>
           <g stroke={C.bone} strokeOpacity="0.2" fill="none" strokeWidth="1.1">
             <path d="M178 132 Q140 144 104 160" /><path d="M182 132 Q220 144 256 160" />

@@ -69,7 +69,7 @@ export function LabChart({ series, domain, yDomain, unit, decimals, ref, baselin
     const flagged = p.validity === "unreliable";
     const stroke = flagged ? "#F87171" : p.interpretable === false ? "#7F90B5" : color;
     const hollow = flagged || p.interpretable === false || off;
-    const fill = hollow ? "#172342" : color;
+    const fill = hollow ? "#0A0D12" : color;
     const sel = selectedId === p.id;
     const common = { stroke, strokeWidth: sel ? 2.5 : 1.6, fill, style: { cursor: "pointer" }, onMouseEnter: () => onHover?.(p), onMouseLeave: () => onHover?.(null), onClick: () => onSelect?.(p) } as const;
     const r = 3.6;
@@ -94,7 +94,7 @@ export function LabChart({ series, domain, yDomain, unit, decimals, ref, baselin
       onMouseLeave={onHoverT ? () => onHoverT(null) : undefined}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart margin={{ top: 8, right: 12, left: 0, bottom: xLabel ? 16 : 4 }}>
-          <CartesianGrid stroke="#243557" />
+          <CartesianGrid stroke="#1B222C" />
           <XAxis dataKey="t" type="number" domain={domain} ticks={ticks} allowDataOverflow tickFormatter={(v: number) => `D${Math.round(v)}`} tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={6}
             label={xLabel ? { value: xLabelText ?? "Mission day (UTC, true time scale)", position: "insideBottom", offset: -10, fill: "#A8B8D8", fontSize: 10 } : undefined} />
           <YAxis yAxisId="y" type="number" domain={yDomain} allowDataOverflow tick={{ fill: "#A8B8D8", fontSize: 10 }} stroke="#7F90B5" tickSize={6} width={46}
@@ -130,8 +130,8 @@ export function MarkerLegend() {
       {sw(<rect x="3.4" y="3.4" width="7.2" height="7.2" {...st} />, "Arterial")}
       {sw(<polygon points="7,2 12,11 2,11" {...st} />, "Venous")}
       {sw(<polygon points="7,2 12,7 7,12 2,7" {...st} />, "Unknown")}
-      {sw(<circle cx="7" cy="7" r="3.6" stroke="#7F90B5" strokeWidth="1.6" fill="#172342" />, "Not interpreted (excluded from trend)")}
-      {sw(<g><circle cx="7" cy="7" r="3.6" stroke="#F87171" strokeWidth="1.6" fill="#172342" /><line x1="2" y1="2" x2="12" y2="12" stroke="#F87171" /></g>, "QC-flagged / rejected")}
+      {sw(<circle cx="7" cy="7" r="3.6" stroke="#7F90B5" strokeWidth="1.6" fill="#0A0D12" />, "Not interpreted (excluded from trend)")}
+      {sw(<g><circle cx="7" cy="7" r="3.6" stroke="#F87171" strokeWidth="1.6" fill="#0A0D12" /><line x1="2" y1="2" x2="12" y2="12" stroke="#F87171" /></g>, "QC-flagged / rejected")}
       <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-4 border border-ok/50 bg-ok/10" />Reference interval</span>
       <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-4 border border-dashed border-accent2/50 bg-accent2/10" />Baseline ±2 SD</span>
     </div>

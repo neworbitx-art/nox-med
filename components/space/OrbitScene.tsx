@@ -3,6 +3,7 @@ import { Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ACTIVE_MISSION_ID, MISSIONS, missionById, shipHealthFor, type MissionRecord } from "@/lib/missions";
 import { checkpointStatus, msOfDay, trajectoryFor, type TrajPoint, type Trajectory } from "@/lib/trajectory";
 import { DISPLAY } from "@/lib/display";
@@ -110,13 +111,79 @@ function Mover({ msRef, get, children, scaleWithDistance, cap, minScale = 0.01, 
   return <group ref={g} visible={false}>{children}</group>;
 }
 
-function Line({ pts, color, opacity, dashed = false, closed = false, draw }: { pts: V3[]; color: string; opacity: number; dashed?: boolean; closed?: boolean; draw?: { msRef: MsRef; fraction: (ms: number) => number } }) {
+function Line({ pts, color, opacity, dashed = false, closed = false, draw, pulse = 0 }: { pts: V3[]; color: string; opacity: number; dashed?: boolean; closed?: boolean; draw?: { msRef: MsRef; fraction: (ms: number) => number }; pulse?: number }) {
   const geo = useMemo(() => { const g = new THREE.BufferGeometry().setFromPoints((closed ? [...pts, pts[0]] : pts).map(v3)); if (dashed) { const p = g.getAttribute("position"), out: number[] = []; for (let i = 0; i + 1 < p.count; i += 2) out.push(p.getX(i), p.getY(i), p.getZ(i), p.getX(i + 1), p.getY(i + 1), p.getZ(i + 1)); return new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(out, 3)); } return g; }, [pts, dashed, closed]);
   useEffect(() => () => geo.dispose(), [geo]);
-  const ref = useRef<THREE.Line>(null);
-  useFrame(() => { if (!draw || !ref.current) return; const n = geo.getAttribute("position").count; ref.current.geometry.setDrawRange(0, Math.max(0, Math.min(n, Math.round(draw.fraction(draw.msRef.current) * n)))); });
+  const ref = useRef<THREE.Line>(null), mat = useRef<THREE.LineBasicMaterial>(null), phase = 0;
+  useFrame(({ clock }) => {
+    if (mat.current && pulse > 0) mat.current.opacity = opacity * (1 - pulse + pulse * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 1.2 + phase - Math.PI / 2))); // slow resting-breath pulse (~5 s), all routes in sync
+    if (!draw || !ref.current) return; const n = geo.getAttribute("position").count; ref.current.geometry.setDrawRange(0, Math.max(0, Math.min(n, Math.round(draw.fraction(draw.msRef.current) * n))));
+  });
   if (dashed) return <lineSegments geometry={geo}><lineBasicMaterial color={color} transparent opacity={opacity} toneMapped={false} /></lineSegments>;
-  return <line ref={ref as never}><primitive object={geo} attach="geometry" /><lineBasicMaterial color={color} transparent opacity={opacity} toneMapped={false} /></line>;
+  return <line ref={ref as never}><primitive object={geo} attach="geometry" /><lineBasicMaterial ref={mat} color={color} transparent opacity={opacity} toneMapped={false} /></line>;
+}
+
+/** The Sun as a small, bright, distant star (network view). Position and size are schematic; lighting in this view is also schematic. */
+export const NET_SUN: V3 = [-108, 54, -270];
+function NetSun() {
+  const tex = useMemo(() => glowTexture(), []);
+  return (
+    <group position={NET_SUN}>
+      <sprite scale={[7, 7, 1]}><spriteMaterial map={tex} color="#ffffff" transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>
+      <sprite scale={[46, 46, 1]}><spriteMaterial map={tex} color="#ffc46b" transparent opacity={0.55} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>
+      <sprite scale={[110, 2.2, 1]}><spriteMaterial map={tex} color="#ffe2b0" transparent opacity={0.4} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>
+      <sprite scale={[2.2, 56, 1]}><spriteMaterial map={tex} color="#ffe2b0" transparent opacity={0.22} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>
+    </group>
+  );
+}
+
+/** Thick "glowing" route (network view): a thin tube plus a soft halo. It breathes slowly; amplitude and rate rise as the mission's vehicle gets closer to a celestial body (Earth, Moon, Mars). */
+// one full parking-orbit loop around Earth, starting at the burn point and leaving tangent to the departure direction
+function earthLoop(pts: V3[], n = 96): V3[] {
+  const E = NET.earth, p0 = pts[0], q = pts[Math.min(4, pts.length - 1)];
+  const v = [p0[0] - E[0], p0[1] - E[1], p0[2] - E[2]], len = Math.hypot(v[0], v[1], v[2]) || 1, R = Math.max(len, NET.earthR * 1.32);
+  const u = v.map((c) => c / len), d = [q[0] - p0[0], q[1] - p0[1], q[2] - p0[2]], dn = d[0] * u[0] + d[1] * u[1] + d[2] * u[2];
+  let t = d.map((c, i) => c - dn * u[i]); const tl = Math.hypot(t[0], t[1], t[2]) || 1; t = t.map((c) => c / tl);
+  const w = [u[1] * t[2] - u[2] * t[1], u[2] * t[0] - u[0] * t[2], u[0] * t[1] - u[1] * t[0]], tc = Math.cos(1.0), ts = Math.sin(1.0); t = t.map((c, i) => c * tc + w[i] * ts);
+  const out: V3[] = []; for (let i = 0; i <= n; i++) { const a = (i / n) * Math.PI * 2, r = len + (R - len) * Math.sin(a / 2) ** 2; out.push([E[0] + r * (Math.cos(a) * u[0] + Math.sin(a) * t[0]), E[1] + r * (Math.cos(a) * u[1] + Math.sin(a) * t[1]), E[2] + r * (Math.cos(a) * u[2] + Math.sin(a) * t[2])]); }
+  return out;
+}
+
+function PulseLine({ pts, color, opacity, closed = false, missionId, msRef, reduced, draw, radius = 0.075, still = false, dashed = false }: { pts: V3[]; color: string; opacity: number; closed?: boolean; missionId: string; msRef: MsRef; reduced: boolean; draw?: (ms: number) => number; radius?: number; still?: boolean; dashed?: boolean }) {
+  const segs = Math.min(400, Math.max(32, pts.length * 2)), RAD = 6;
+  const make = (r: number) => {
+    if (dashed) { const parts: THREE.BufferGeometry[] = []; for (let i = 0; i + 1 < pts.length; i += 2) parts.push(new THREE.TubeGeometry(new THREE.LineCurve3(v3(pts[i]), v3(pts[i + 1])), 1, r, 5, false)); const g = mergeGeometries(parts)!; parts.forEach((x) => x.dispose()); return g; }
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(v3), closed, "catmullrom", 0.3), segs, r, RAD, closed);
+  };
+  const core = useMemo(() => make(radius), [pts, closed, dashed]); // eslint-disable-line react-hooks/exhaustive-deps
+  const halo = useMemo(() => (still ? null : make(radius * (dashed ? 2.2 : 3.2))), [pts, closed, dashed, still]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { core.dispose(); halo?.dispose(); }, [core, halo]);
+  // samples are uniform in time, tube segments uniform in arc length: convert the flown time-fraction to an arc-length fraction
+  const cum = useMemo(() => { const c = [0]; for (let i = 1; i < pts.length; i++) c.push(c[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1], pts[i][2] - pts[i - 1][2])); return c; }, [pts]);
+  const mc = useRef<THREE.MeshBasicMaterial>(null), mh = useRef<THREE.MeshBasicMaterial>(null), ph = useRef(0), tr = useMemo(() => trajectoryFor(missionId), [missionId]), ed = useMemo(() => entryDirOf(tr), [tr]);
+  useFrame((_, dt) => {
+    const ms = msRef.current;
+    if (still) { if (draw) { const ft = Math.max(0, Math.min(1, draw(ms))) * (pts.length - 1), i0 = Math.min(pts.length - 2, Math.floor(ft)), len = cum[i0] + (cum[i0 + 1] - cum[i0]) * (ft - i0), f = len / (cum[cum.length - 1] || 1); core.setDrawRange(0, Math.ceil(f * segs) * RAD * 6); } return; }
+    let prox = 0; const pt = pointAt(missionId, ms);
+    if (pt) {
+      const q = posOf(missionId, "net", pt, tr, ed), mo = moonNet(ms);
+      const gap = (c: V3, r: number) => Math.hypot(q[0] - c[0], q[1] - c[1], q[2] - c[2]) - r;
+      const d = Math.min(gap(NET.earth, NET.earthR), mo ? gap(mo, NET.moonR) : 1e9, gap(NET.mars, NET.marsR)), x = Math.max(0, Math.min(1, 1 - d / 18));
+      prox = x * x * (3 - 2 * x);
+    }
+    const amp = reduced ? 0 : 0.3 + 0.62 * prox, w = dashed ? 3.6 + 3 * prox : 1.2 + 1.9 * prox;
+    ph.current += dt * w;
+    const k = 1 - amp + amp * (0.5 + 0.5 * Math.sin(ph.current - Math.PI / 2));
+    if (mc.current) mc.current.opacity = opacity * (0.35 + 0.65 * k);
+    if (mh.current) mh.current.opacity = 0.28 * opacity * k * k;
+    if (draw) { const ft = Math.max(0, Math.min(1, draw(ms))) * (pts.length - 1), i0 = Math.min(pts.length - 2, Math.floor(ft)), len = cum[i0] + (cum[i0 + 1] - cum[i0]) * (ft - i0), f = len / (cum[cum.length - 1] || 1), n = Math.ceil(f * segs) * RAD * 6; core.setDrawRange(0, n); halo?.setDrawRange(0, n); }
+  });
+  return (
+    <group>
+      {halo && <mesh geometry={halo}><meshBasicMaterial ref={mh} color={color} transparent opacity={0.2} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} /></mesh>}
+      <mesh geometry={core}><meshBasicMaterial ref={mc} color={color} transparent opacity={opacity} depthWrite={false} toneMapped={false} /></mesh>
+    </group>
+  );
 }
 
 function Marker({ color, size = 0.05 }: { color: string; size?: number }) {
@@ -143,7 +210,7 @@ const shipLabel = (m: MissionRecord, selectedId: string | null, missionId: strin
   const sess = m.id === ACTIVE_MISSION_ID, sel = m.id === selectedId || m.id === missionId, lvl = shipHealthFor(m).overall, dot = lvl === "watch" || lvl === "warning" || lvl === "critical";
   return (
     <div className="relative">
-      <div className={`flex items-center gap-1.5 whitespace-nowrap rounded-[3px] border px-2 py-[3px] font-mono text-[11px] tracking-wide ${sel ? "border-accent bg-bg/85 font-semibold text-ink shadow-[0_0_10px_rgba(56,201,244,0.35)]" : "border-ink2/70 bg-bg/70 text-ink"}`}>
+      <div className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1 font-mono text-[11px] tracking-wide backdrop-blur-md ${sel ? "border-accent bg-black/60 font-semibold text-ink shadow-[0_0_14px_rgba(56,201,244,0.4)]" : "border-white/25 bg-black/50 text-ink"}`}>
         {sel && <span className="inline-block h-2 w-2 rounded-full" style={{ background: ROUTE_COLOR[m.route] }} />}
         {dot && <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: LEVEL_COLOR[lvl] }} />}
         {m.code}{sess ? " · SESSION" : ""}
@@ -167,10 +234,10 @@ function Vehicle({ m, frame, msRef, emphasis, reduced, onSelect, onHover, showMo
     if (a && b) { tmp.set(b[0] - a[0], b[1] - a[1], b[2] - a[2]); if (tmp.lengthSq() > 1e-14) { q.setFromUnitVectors(ex, tmp.normalize()); o.quaternion.copy(q); } }
     if (hit.current && a) { const d = camera.position.distanceTo(tmp.set(a[0], a[1], a[2])); hit.current.scale.setScalar(Math.max(frame === "net" ? 1.6 : 0.12, d * 0.022)); }
   });
-  const net = frame === "net", cap = net ? 5.2 : frame === "helio" ? 0.16 : 0.9;
+  const net = frame === "net", cap = net ? 4.6 : frame === "helio" ? 0.16 : 0.9;
   return (
     <Mover msRef={msRef} get={get}>
-      <Mover msRef={{ current: 0 }} get={() => [0, 0, 0]} scaleWithDistance={net ? 0.052 : frame === "helio" ? 0.014 : 0.024} cap={cap} minScale={0.012}><group ref={orient}>{showModel ? <Spacecraft variant={variantFor(m.route)} emphasis={emphasis} accent={ROUTE_COLOR[m.route]} reduced={reduced} /> : null}</group></Mover>
+      <Mover msRef={{ current: 0 }} get={() => [0, 0, 0]} scaleWithDistance={net ? 0.046 : frame === "helio" ? 0.014 : 0.024} cap={cap} minScale={0.012}><group ref={orient}>{showModel ? <Spacecraft variant={variantFor(m.route)} emphasis={emphasis} accent={ROUTE_COLOR[m.route]} reduced={reduced} /> : null}</group></Mover>
       <Mover msRef={{ current: 0 }} get={() => [0, 0, 0]} scaleWithDistance={0.0055} cap={0.6} minScale={0.004}><Marker color={ROUTE_COLOR[m.route]} size={net ? 0.5 : 1} /></Mover>
       <mesh ref={hit} onClick={(e) => { e.stopPropagation(); onSelect(); }}
         onPointerOver={(e) => { e.stopPropagation(); onHover({ kind: "ship", missionId: m.id, x: e.nativeEvent.clientX, y: e.nativeEvent.clientY }); }}
@@ -233,6 +300,7 @@ export default function OrbitScene(p: SceneProps) {
       out.push({ key: "earth", get: (ms) => { const b = bodiesHelio(ms); return b ? [b.earth[0], b.earth[1] + 0.95, b.earth[2]] : null; }, node: bodyLabel("EARTH") });
       out.push({ key: "mars", get: (ms) => { const b = bodiesHelio(ms); return b ? [b.mars[0], b.mars[1] + 0.7, b.mars[2]] : null; }, node: bodyLabel("MARS") });
     } else if (net) {
+      out.push({ key: "sun", get: () => [NET_SUN[0], NET_SUN[1] - 9, NET_SUN[2]], dy: 0, node: <span className="whitespace-nowrap font-mono text-[10px] tracking-[0.2em] text-ink2/70">SUN</span> });
       out.push({ key: "moon", get: (ms) => { const q = moonNet(ms); return q ? [q[0], q[1] + NET.moonR + 0.6, q[2]] : null; }, dy: -2, node: bodyLabel("MOON") });
       out.push({ key: "mars", get: () => [NET.mars[0] + 1, NET.mars[1] - NET.marsR - 2.8, NET.mars[2] + 4], dy: 6, node: bodyLabel("MARS") });
       out.push({ key: "earth", get: () => [NET.earth[0], NET.earth[1] - NET.earthR - 1.6, NET.earth[2]], dy: 6, node: bodyLabel("EARTH") });
@@ -271,21 +339,24 @@ export default function OrbitScene(p: SceneProps) {
           {net ? (
             <>
               <directionalLight position={[-14, 22, 80]} intensity={3.4} color="#fff6e6" />
+              <NetSun />
               <group position={NET.earth}><Earth radius={NET.earthR} msRef={p.msRef} reduced={p.reduced} onClick={p.onFocusBody} onHover={bodyHover} /></group>
               <Mover msRef={p.msRef} get={(ms) => moonNet(ms)}><Moon radius={NET.moonR} faceTo={moonFace} onClick={p.onFocusBody} onHover={bodyHover} /></Mover>
               <group position={NET.mars}><Mars radius={NET.marsR} msRef={p.msRef} reduced={p.reduced} onClick={p.onFocusBody} onHover={bodyHover} /></group>
               {visible.map((x) => {
                 const tr = trajectoryFor(x.id), ed = entryDirOf(tr), on = x.id === p.missionId || x.id === p.selectedId, col = ROUTE_COLOR[x.route];
                 const ring = netOrbitRing(x.id);
-                if (ring && x.route !== "earth-mars-transfer") return <group key={x.id}><Line pts={ring} color={col} opacity={on ? 0.95 : 0.5} closed /><Dots pts={ring} every={13} color={on ? "#F7FAFF" : col} size={on ? 3.2 : 2.4} opacity={on ? 0.95 : 0.55} /></group>;
+                if (ring && x.route !== "earth-mars-transfer") return <group key={x.id}><PulseLine pts={ring} color={col} opacity={on ? 0.95 : 0.5} closed missionId={x.id} msRef={p.msRef} reduced={p.reduced} /><Dots pts={ring} every={13} color={on ? "#F7FAFF" : col} size={on ? 3.2 : 2.4} opacity={on ? 0.95 : 0.55} /></group>;
                 const pts = pathScene(x.id, "net", x.route === "earth-mars-transfer" ? 320 : 260);
+                const loop = x.route === "earth-mars-transfer" ? earthLoop(pts) : null;
                 const cap = x.route === "lunar-transfer" ? tr.samples(40, tr.checkpoints.find((c) => c.id === "soi")!.plannedDay, tr.checkpoints.find((c) => c.id === "loi")!.plannedDay).map((q) => posOf(x.id, "net", q, tr, ed)) : null;
                 return (
                   <group key={x.id}>
-                    <Line pts={pts} color={col} opacity={on ? 0.55 : 0.28} dashed />
-                    <Line pts={pts} color={col} opacity={on ? 1 : 0.6} draw={{ msRef: p.msRef, fraction: flown(x.id) }} />
+                    <PulseLine dashed pts={pts} color={col} opacity={on ? 0.85 : 0.5} missionId={x.id} msRef={p.msRef} reduced={p.reduced} radius={0.036} />
+                    <PulseLine still pts={pts} color={col} opacity={on ? 0.95 : 0.6} missionId={x.id} msRef={p.msRef} reduced={p.reduced} draw={flown(x.id)} radius={0.03} />
+                    {loop && <PulseLine still pts={loop} color={col} opacity={on ? 0.95 : 0.6} missionId={x.id} msRef={p.msRef} reduced={p.reduced} radius={0.03} />}
                     <Dots pts={pts} every={x.route === "earth-mars-transfer" ? 32 : 26} color={col} size={on ? 3.4 : 2.4} opacity={on ? 0.95 : 0.5} />
-                    {cap && <Line pts={cap} color={col} opacity={on ? 0.7 : 0.35} dashed />}
+                    {cap && <PulseLine dashed pts={cap} color={col} opacity={on ? 0.85 : 0.45} missionId={x.id} msRef={p.msRef} reduced={p.reduced} radius={0.036} />}
                     {x.route === "lunar-transfer" && <Mover msRef={p.msRef} get={(ms) => moonNet(ms)}><Line pts={netLunarRing(x.id)} color={col} opacity={on ? 0.7 : 0.4} closed /></Mover>}
                   </group>
                 );
