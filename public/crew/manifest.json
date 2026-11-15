@@ -1,0 +1,33 @@
+{
+ "note": "Portraits are fictional identities. Replace each placeholder file with an approved photographic portrait (4:5, WebP, 960x1200, even soft studio light, neutral light-grey background, plain navy flight suit without mission patches or real names). All views use the same file. status: placeholder -> approved once replaced.",
+ "portraits": [
+  {
+   "id": "A-01",
+   "file": "/crew/astronaut-a01.webp",
+   "alt": "Portrait of fictional crew member A-01, Commander",
+   "status": "placeholder",
+   "brief": "Man, mid-40s, short grey-brown hair, calm expression; 46 y male; Commander. Do not imitate any real astronaut or public figure."
+  },
+  {
+   "id": "A-02",
+   "file": "/crew/astronaut-a02.webp",
+   "alt": "Portrait of fictional crew member A-02, Flight Engineer",
+   "status": "placeholder",
+   "brief": "Woman, late 30s, dark hair tied back; 39 y female; Flight Engineer. Do not imitate any real astronaut or public figure."
+  },
+  {
+   "id": "A-03",
+   "file": "/crew/astronaut-a03.webp",
+   "alt": "Portrait of fictional crew member A-03, Science Specialist",
+   "status": "placeholder",
+   "brief": "Man, early 30s, short black hair; 42 y female; Science Specialist. Do not imitate any real astronaut or public figure."
+  },
+  {
+   "id": "A-04",
+   "file": "/crew/astronaut-a04.webp",
+   "alt": "Portrait of fictional crew member A-04, Medical Officer",
+   "status": "placeholder",
+   "brief": "Woman, mid-50s, short silver hair; 44 y male; Medical Officer. Do not imitate any real astronaut or public figure."
+  }
+ ]
+}
