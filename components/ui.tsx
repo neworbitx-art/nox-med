@@ -5,7 +5,7 @@ import type { Severity, AstronautId, MetricKey } from "@/lib/types";
 import { METRICS } from "@/lib/metrics";
 import type { StatusLevel } from "@/lib/alerts";
 
-export const CREW_COLORS: Record<AstronautId, string> = { "A-01": "#38C9F4", "A-02": "#A78BFA", "A-03": "#60A5FA", "A-04": "#B9C6E3" };
+export const CREW_COLORS: Record<AstronautId, string> = { "A-01": "#38C9F4", "A-02": "#A78BFA", "A-03": "#60A5FA", "A-04": "#B9C6E3", "L-01": "#38C9F4", "L-02": "#A78BFA", "L-03": "#60A5FA", "E-01": "#38C9F4", "E-02": "#A78BFA", "R-01": "#38C9F4", "R-02": "#A78BFA" };
 
 /** Instrument-style panel: fine border, compact uppercase heading, optional technical code. */
 export function Card({ title, subtitle, right, children, className = "", code }: { title?: ReactNode; subtitle?: ReactNode; right?: ReactNode; children: ReactNode; className?: string; code?: string }) {

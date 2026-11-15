@@ -44,11 +44,11 @@ export default function MissionControl() {
 
   return (
     <>
-      <PageHeader title="Mission Control" desc="Crew-wide health status for NOX-01. Trends against each astronaut's own baseline surface change before a value leaves its reference range." />
+      <PageHeader title="Mission Control" desc={`Crew-wide health status for ${mission.id}. Trends against each astronaut's own baseline surface change before a value leaves its reference range.`} />
 
       <Card className="mb-4">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-          <div><span className="font-semibold text-ink">NOX-01 {mission.name}</span> <span className="text-mute">· {dayToDate(currentDay)}</span></div>
+          <div><span className="font-semibold text-ink">{mission.id} {mission.name}</span> <span className="text-mute">· {dayToDate(currentDay)}</span></div>
           <div className="num text-accent">Day {currentDay} of {mission.totalDays} · {((currentDay / mission.totalDays) * 100).toFixed(1)}% elapsed · {mission.totalDays - currentDay} d remaining</div>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded bg-track" role="progressbar" aria-valuenow={currentDay} aria-valuemax={mission.totalDays}>

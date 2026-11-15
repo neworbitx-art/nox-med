@@ -5,7 +5,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { Activity, Droplet, FlaskConical, LayoutDashboard, Menu, Siren, Wind, Watch, X, Orbit, Box, Users, Compass, HeartPulse, ArrowLeft } from "lucide-react";
 import { astronauts } from "@/lib/data";
 import { useMission } from "@/lib/store";
-import { missionById, missionDate, ROUTE_LABEL } from "@/lib/missions";
+import { ACTIVE_MISSION_ID, missionById, missionDate, ROUTE_LABEL } from "@/lib/missions";
 import { crewOf } from "@/lib/crewregistry";
 import { MissionSelector } from "./MissionSelector";
 import { MissionGate } from "./MissionGate";
@@ -122,6 +122,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <span>{missionDate(m, m.vehicle.day)} UTC (mission-elapsed {m.vehicle.day - 1} d)</span>
             <span className="hidden sm:inline">{m.code} · {m.name}</span>
             {m.hasCrewData && <span className="hidden sm:inline">Analyzer: ABL90 FLEX PLUS</span>}
+            {m.hasCrewData && m.id !== ACTIVE_MISSION_ID && <span className="text-warn" data-testid="synthetic-banner">SYNTHETIC DEMONSTRATION DATA · simulated crew, not real measurements</span>}
           </div>
         </header>
         <main className="p-4 lg:p-6">{gate ? <MissionGate module={gate.label}>{children}</MissionGate> : children}</main>

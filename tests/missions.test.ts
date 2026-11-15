@@ -1,3 +1,4 @@
+import { DATASETS } from "@/lib/data";
 import { describe, expect, it } from "vitest";
 import { ACTIVE_MISSION_ID, MISSIONS, levelOf, missionById, shipHealthFor, worst } from "@/lib/missions";
 import { checkpointsOf, trajectoryFor } from "@/lib/trajectory";
@@ -9,7 +10,7 @@ describe("missions", () => {
     expect(MISSIONS.length).toBeGreaterThanOrEqual(3);
     expect(new Set(MISSIONS.map((m) => m.id)).size).toBe(MISSIONS.length);
     expect(missionById(ACTIVE_MISSION_ID)?.hasCrewData).toBe(true);
-    expect(MISSIONS.filter((m) => m.hasCrewData)).toHaveLength(1);
+    expect(MISSIONS.every((m) => m.hasCrewData)).toBe(true); // NOX-02..04 carry labelled synthetic datasets
   });
   it("every mission has required fields", () => {
     for (const m of MISSIONS) {
@@ -44,14 +45,22 @@ describe("missions", () => {
     expect(a.overall).toBe("watch");
     expect(a.readings.every((r) => r.value !== null)).toBe(true);
   });
-  it("never fabricates telemetry for missions without it", () => {
+  it("non-NOX-01 missions use labelled synthetic datasets, not NOX-01 records", () => {
     for (const m of MISSIONS.filter((x) => x.id !== ACTIVE_MISSION_ID)) {
       const h = shipHealthFor(m);
-      expect(h.overall).toBe("unknown");
-      expect(h.readings.every((r) => r.value === null && r.status === "unknown")).toBe(true);
-      expect(h.warnings).toEqual([]);
-      expect(h.snapshot.timestamp).toBeNull();
+      expect(h.snapshot.source).toMatch(/Synthetic/);
+      expect(m.dataSource).toMatch(/Synthetic/);
+      expect(DATASETS[m.id].mission.dataNotice).toMatch(/SYNTHETIC/);
+      const ids = new Set(DATASETS[m.id].astronauts.map((a) => a.id));
+      expect(DATASETS[m.id].labs.every((l) => ids.has(l.astronautId) && l.origin === "simulated")).toBe(true);
+      expect(m.crew.every((c) => c.astronautId && ids.has(c.astronautId))).toBe(true);
     }
+  });
+  it("crew health drifts with time in long missions (hematocrit down, sleep down for the stressed crew member)", () => {
+    const d = DATASETS["NOX-04"], hct = (id: string, from: number, to: number) => { const v = d.labs.filter((l) => l.astronautId === id && l.missionDay >= from && l.missionDay <= to && l.verification !== "rejected").map((l) => l.values.Hct!); return v.reduce((x, y) => x + y, 0) / v.length; };
+    expect(hct("R-02", 1, 20) - hct("R-02", 190, 211)).toBeGreaterThan(3);
+    const sl = (from: number, to: number) => { const v = d.vitals.filter((x) => x.astronautId === "R-02" && x.missionDay >= from && x.missionDay <= to).map((x) => x.sleepHours); return v.reduce((x, y) => x + y, 0) / v.length; };
+    expect(sl(1, 60) - sl(180, 211)).toBeGreaterThan(0.8);
   });
   it("overview systems: cardiovascular, respiratory and hematological are functional; the rest are marked future", () => {
     expect(OVERVIEW_SYSTEMS).toHaveLength(9);

@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Alert, AstronautId, LabResult, UploadedLab } from "./types";
-import { ASTRONAUT_IDS, astronauts, baseLabs, baseVitals, environment, mission } from "./data";
+import { ASTRONAUT_IDS, astronauts, baseLabs, baseVitals, environment, mission, setActiveDataset } from "./data";
 import { generateAlerts } from "./alerts";
 import { ACTIVE_MISSION_ID, missionById } from "./missions";
 import { DEMO_RECORDS, type MedicalRecord } from "./crewprofile";
@@ -42,7 +42,9 @@ function load<T>(key: string, fallback: T): T {
 
 export function MissionProvider({ children }: { children: ReactNode }) {
   const [selectedId, setSelected] = useState<AstronautId>("A-01");
-  const [missionId, setMissionId] = useState<string>(ACTIVE_MISSION_ID);
+  const [missionId, setMissionIdRaw] = useState<string>(ACTIVE_MISSION_ID);
+  setActiveDataset(missionId); // synchronous, idempotent: module-level crew/labs/vitals/environment follow the selected mission
+  const setMissionId = useCallback((id: string) => { setActiveDataset(id); setMissionIdRaw(id); setSelected((cur) => (ASTRONAUT_IDS as string[]).includes(cur) ? cur : (ASTRONAUT_IDS[0] as AstronautId)); }, []);
   const [importedLabs, setImported] = useState<LabResult[]>([]);
   const [uploadedLabs, setUploaded] = useState<UploadedLab[]>([]);
   const [medRecords, setMed] = useState<MedicalRecord[]>([]);
@@ -50,10 +52,10 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const sel = load<string>(K.sel, "A-01");
-    if ((ASTRONAUT_IDS as string[]).includes(sel)) setSelected(sel as AstronautId);
     const mid = load<string>(K.mis, ACTIVE_MISSION_ID);
-    if (missionById(mid)) setMissionId(mid);
+    if (missionById(mid)) { setActiveDataset(mid); setMissionIdRaw(mid); }
+    const sel = load<string>(K.sel, "A-01");
+    setSelected((ASTRONAUT_IDS as string[]).includes(sel) ? (sel as AstronautId) : (ASTRONAUT_IDS[0] as AstronautId));
     setImported(load<LabResult[]>(K.imp, []));
     setSim(load<Alert[]>(K.sim, []));
     setUploaded(load<UploadedLab[]>(K.upl, []));
@@ -74,11 +76,11 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const logSimEvent = useCallback((a: Alert) => setSim((p) => [a, ...p]), []);
   const clearSimEvents = useCallback(() => setSim([]), []);
 
-  const labs = useMemo(() => [...baseLabs, ...importedLabs], [importedLabs]);
+  const labs = useMemo(() => [...baseLabs, ...importedLabs], [importedLabs, missionId]); // eslint-disable-line react-hooks/exhaustive-deps
   const alerts = useMemo(() => {
     const gen = generateAlerts(labs, baseVitals, environment, astronauts.map((a) => a.id), mission.currentDay);
     return [...simEvents, ...gen].sort((a, b) => b.missionDay - a.missionDay);
-  }, [labs, simEvents]);
+  }, [labs, simEvents, missionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value: Store = { selectedId, select: setSelected, missionId, selectMission: setMissionId, labs, importedLabs, addImported, clearImported, uploadedLabs, addUploaded, removeUploaded, clearUploaded, medRecords, addRecord, removeRecord, loadDemoRecords, clearRecords, simEvents, logSimEvent, clearSimEvents, alerts, currentDay: mission.currentDay };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

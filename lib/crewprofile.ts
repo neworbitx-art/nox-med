@@ -1,4 +1,5 @@
 import type { AstronautId } from "./types";
+import { mission } from "./data";
 import portraitManifest from "../public/crew/manifest.json";
 
 /** Body systems used to filter medical records and (when a model exists) the 3D atlas. */
@@ -59,7 +60,7 @@ export const DEMO_RECORDS: Omit<MedicalRecord, "id">[] = [
 // ───────────────────────── portraits ─────────────────────────
 export interface PortraitEntry { id: AstronautId; file: string; alt: string; status: "placeholder" | "approved"; brief: string }
 export const PORTRAITS = portraitManifest.portraits as PortraitEntry[];
-export const portraitOf = (id: AstronautId) => PORTRAITS.find((p) => p.id === id)!;
+export const portraitOf = (id: AstronautId): PortraitEntry => PORTRAITS.find((p) => p.id === id) ?? { id, file: "", alt: `Crew member ${id} (no portrait on file)`, status: "placeholder", brief: "" };
 
 // ───────────────────────── longitudinal record ─────────────────────────
 export type Phase = "previous-mission" | "preflight" | "active-mission" | "postflight" | "future-assignment";
@@ -77,14 +78,17 @@ export const CREW_IDENTITY: Record<AstronautId, { persistentId: string; callsign
   "A-02": { persistentId: "NOX-CREW-0002", callsign: "Pilot" },
   "A-03": { persistentId: "NOX-CREW-0003", callsign: "Mission specialist" },
   "A-04": { persistentId: "NOX-CREW-0004", callsign: "Flight engineer" },
+  "L-01": { persistentId: "NOX-CREW-0005", callsign: "Commander" }, "L-02": { persistentId: "NOX-CREW-0006", callsign: "Pilot" }, "L-03": { persistentId: "NOX-CREW-0007", callsign: "Mission specialist" },
+  "E-01": { persistentId: "NOX-CREW-0008", callsign: "Station commander" }, "E-02": { persistentId: "NOX-CREW-0009", callsign: "Flight engineer" },
+  "R-01": { persistentId: "NOX-CREW-0010", callsign: "Commander" }, "R-02": { persistentId: "NOX-CREW-0011", callsign: "Flight engineer" },
 };
 
 /** Episodes for one astronaut. Observation counts for the active mission come from the real dataset; no future observations are generated. */
 export function episodesFor(id: AstronautId, activeLabCount: number, currentDay: number, totalDays: number): Episode[] {
   return [
     { phase: "previous-mission", label: "Earlier assignments", period: "—", status: "not-recorded", hasObservations: false, note: "No previous-mission data has been loaded for this fictional crew member." },
-    { phase: "preflight", label: "Preflight baseline", period: "before NOX-01 launch", status: "not-recorded", hasObservations: false, note: "No preflight samples are in this dataset. The personal baseline used in trend rules is the first reliable in-mission samples, which is not a preflight baseline." },
-    { phase: "active-mission", label: "NOX-01 Mars Transit", period: `day ${currentDay} of ${totalDays}`, status: "in-progress", hasObservations: activeLabCount > 0, note: `${activeLabCount} blood gas samples recorded so far. Scenario runs in the Emergency Simulator are separate from this record.` },
+    { phase: "preflight", label: "Preflight baseline", period: "before mission launch", status: "not-recorded", hasObservations: false, note: "No preflight samples are in this dataset. The personal baseline used in trend rules is the first reliable in-mission samples, which is not a preflight baseline." },
+    { phase: "active-mission", label: `${mission.id} ${mission.name}`, period: `day ${currentDay} of ${totalDays}`, status: "in-progress", hasObservations: activeLabCount > 0, note: `${activeLabCount} blood gas samples recorded so far. Scenario runs in the Emergency Simulator are separate from this record.` },
     { phase: "postflight", label: "Postflight recovery", period: `after day ${totalDays}`, status: "planned", hasObservations: false, note: "Not started. No postflight observations exist." },
     { phase: "future-assignment", label: "Future assignments", period: "unassigned", status: "planned", hasObservations: false, note: "Planned items carry no clinical observations." },
   ];

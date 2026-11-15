@@ -33,7 +33,7 @@ const lvl = (l: MissionStatusLevel) => <span className="inline-flex items-center
 export default function MissionOverview() {
   const { missionId } = useParams<{ missionId: string }>();
   const m = missionById(decodeURIComponent(missionId ?? ""));
-  const { selectedId, select, medRecords, selectMission, labs, alerts, currentDay } = useMission();
+  const { selectedId, select, medRecords, selectMission, labs, alerts, currentDay, missionId: storeMission } = useMission();
   const [localCode, setLocalCode] = useState<string | null>(null);
   const [system, setSystem] = useState<SystemId>("cardiovascular");
   const [reduced, setReduced] = useState(false);
@@ -45,7 +45,7 @@ export default function MissionOverview() {
   const roster = useMemo(() => (m ? crewOf(m) : []), [m]);
   if (!m) return <><h1 className="text-xl font-semibold">Mission not found</h1><p className="text-mute">This mission code is not in the mission list.</p><Link href="/" className="text-accent hover:underline">← Back to Mission Navigator</Link></>;
 
-  const ship = shipHealthFor(m), tr = trajectoryFor(m.id), active = m.id === ACTIVE_MISSION_ID;
+  const ship = shipHealthFor(m), tr = trajectoryFor(m.id), active = m.hasCrewData && m.id === storeMission;
   const crew = roster.find((c) => (c.astronaut && active ? c.astronaut.id === selectedId : c.code === (localCode ?? roster[0].code))) ?? roster[0];
   const aid = crew.astronaut?.id, hasData = active && !!aid && crew.hasClinicalRecords;
   const atlasOn = ATLAS_SYSTEMS.includes(system as never);

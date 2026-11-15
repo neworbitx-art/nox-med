@@ -1,6 +1,6 @@
-import { astronauts } from "./data";
+import { ALL_ASTRONAUTS } from "./data";
 import { MISSIONS, type MissionRecord } from "./missions";
-import { CREW_IDENTITY } from "./crewprofile";
+import { CREW_IDENTITY, PORTRAITS } from "./crewprofile";
 import type { Astronaut } from "./types";
 
 export interface Assignment { missionId: string; role: string; status: "active" | "planned" | "completed" }
@@ -11,7 +11,7 @@ export interface CrewRecord {
   astronaut?: Astronaut;       // detailed physiology record: exists only for the NOX-01 session crew
   hasClinicalRecords: boolean;
   assignments: Assignment[];
-  portraitId?: "A-01" | "A-02" | "A-03" | "A-04";
+  portraitId?: string;
 }
 
 /** Persistent identity per roster entry. Additional assignments are fictional planning entries (never measurements). */
@@ -26,10 +26,10 @@ export function crewOf(m: MissionRecord): CrewRecord[] {
   let counter = PERSISTENT_START - 1; const ids = new Map<string, string>();
   for (const mm of MISSIONS) for (const cc of mm.crew) ids.set(cc.code, cc.astronautId ? CREW_IDENTITY[cc.astronautId].persistentId : `NOX-CREW-${String(++counter).padStart(4, "0")}`);
   for (const c of m.crew) {
-    const a = c.astronautId ? astronauts.find((x) => x.id === c.astronautId) : undefined;
+    const a = c.astronautId ? ALL_ASTRONAUTS.find((x) => x.id === c.astronautId) : undefined;
     out.push({
       code: c.code, persistentId: ids.get(c.code)!, callsign: c.astronautId ? CREW_IDENTITY[c.astronautId].callsign : c.role, role: c.role, astronaut: a,
-      hasClinicalRecords: !!a && m.hasCrewData, portraitId: c.astronautId,
+      hasClinicalRecords: !!a && m.hasCrewData, portraitId: c.astronautId && PORTRAITS.some((p) => p.id === c.astronautId) ? c.astronautId : undefined,
       assignments: [{ missionId: m.id, role: c.role, status: "active" }, ...(EXTRA[c.code] ?? [])],
     });
   }

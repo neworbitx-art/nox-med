@@ -1,4 +1,4 @@
-import { dayToDate, environment, mission } from "./data";
+import { DATASETS } from "./data";
 import type { EnvironmentalSample } from "./types";
 
 /**
@@ -27,9 +27,10 @@ export interface TelemetryAdapter {
 export const localReplayAdapter: TelemetryAdapter = {
   id: "local-replay", kind: "replay",
   latest(missionId) {
-    if (missionId !== mission.id) return { missionId, timestamp: null, missionDay: null, cabin: null, source: "No telemetry source for this mission", live: false };
-    const c = environment[environment.length - 1];
-    return { missionId, timestamp: dayToDate(c.missionDay), missionDay: c.missionDay, cabin: c, source: "Local demonstration dataset (replay)", live: false };
+    const d = DATASETS[missionId];
+    if (!d || d.environment.length === 0) return { missionId, timestamp: null, missionDay: null, cabin: null, source: "No telemetry source for this mission", live: false };
+    const c = d.environment[d.environment.length - 1], dt = new Date(Date.parse(d.mission.startDate + "T00:00:00Z") + (c.missionDay - 1) * 86400000).toISOString().slice(0, 10);
+    return { missionId, timestamp: dt, missionDay: c.missionDay, cabin: c, source: missionId === "NOX-01" ? "Local demonstration dataset (replay)" : "Synthetic demonstration dataset (replay)", live: false };
   },
   subscribe(missionId, cb) { cb(this.latest(missionId)); return () => {}; },
 };

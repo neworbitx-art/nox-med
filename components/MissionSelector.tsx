@@ -38,7 +38,7 @@ export function MissionSelector({ dark = false, onChange }: { dark?: boolean; on
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="num">{m.code}</span>{m.name}{sel && <Check size={13} className="text-accent" />}</span>
                     <span className="block text-[11px] text-mute">{ROUTE_LABEL[m.route]} · day {m.vehicle.day}/{m.vehicle.totalDays} · {m.crew.length} crew</span>
-                    <span className="block text-[10px] uppercase tracking-wide text-mute">{m.id === ACTIVE_MISSION_ID ? <span className="text-lime">Session mission · data loaded</span> : "No clinical data loaded"}</span>
+                    <span className="block text-[10px] uppercase tracking-wide text-mute">{m.id === ACTIVE_MISSION_ID ? <span className="text-lime">Session mission · data loaded</span> : m.hasCrewData ? "Synthetic crew data loaded" : "No clinical data loaded"}</span>
                   </span>
                 </button>
               </li>

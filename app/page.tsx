@@ -39,60 +39,78 @@ const metOf = (days: number) => { const neg = days < 0, a = Math.abs(days) * 864
 const fmtKm = (km: number) => km >= 1e6 ? `${(km / 1e6).toFixed(1)}M km` : km >= 1e4 ? `${Math.round(km / 1e3).toLocaleString("en-US")}k km` : `${Math.round(km).toLocaleString("en-US")} km`;
 const dateOfDay = (m: MissionRecord, day: number) => new Date(msOf(m, day)).toISOString().slice(0, 16).replace("T", " ") + " UTC";
 
-function MissionPanel({ m, onClose, pickedCp, onPick, onJump, onOpen }: { m: MissionRecord; onClose: () => void; pickedCp: string | null; onPick: (cp: string) => void; onJump: (day: number) => void; onOpen: () => void }) {
-  const { alerts, currentDay } = useMission();
-  const ship = shipHealthFor(m), active = isActiveMission(m), tr = trajectoryFor(m.id);
+function CheckpointMenu({ items, onPick }: { items: { id: string; label: string }[]; onPick: (id: string) => void }) {
+  const [open, setOpen] = useState(false), box = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!open) return; const d = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); }, k = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } }; window.addEventListener("pointerdown", d); window.addEventListener("keydown", k, true); return () => { window.removeEventListener("pointerdown", d); window.removeEventListener("keydown", k, true); }; }, [open]);
+  return (
+    <div ref={box} className="relative">
+      <button onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open} aria-label="Go back to a completed checkpoint" data-testid="jump" className="g-btn inline-flex items-center gap-1.5 !rounded-full px-3 py-1 font-mono text-[11px] text-ink">go back to… <span aria-hidden className="text-[9px] text-accent">▾</span></button>
+      {open && <ul role="listbox" aria-label="Checkpoints" className="g-menu absolute bottom-full left-0 z-20 mb-2 max-h-64 w-64 overflow-y-auto !rounded-2xl p-1" style={{ transformOrigin: "bottom left" }}>
+        {items.length === 0 && <li className="px-3 py-2 text-[11px] text-ink2">No completed checkpoints yet</li>}
+        {items.map((c) => <li key={c.id}><button role="option" aria-selected={false} data-cp-option={c.id} onClick={() => { onPick(c.id); setOpen(false); }} className="g-item block w-full px-3 py-1.5 text-left font-mono text-[11px]">{c.label}</button></li>)}
+      </ul>}
+    </div>
+  );
+}
+
+function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }: { m: MissionRecord; onClose: () => void; closing: boolean; pickedCp: string | null; onPick: (cp: string) => void; onJump: (day: number) => void; onOpen: () => void }) {
+  const { alerts, currentDay, missionId } = useMission();
+  const ship = shipHealthFor(m), active = m.hasCrewData && m.id === missionId, tr = trajectoryFor(m.id);
   const crew = useMemo(() => {
     if (!active) return null;
     const c = { nominal: 0, watch: 0, attention: 0, critical: 0 };
     astronauts.forEach((a) => { c[statusFor(alerts, a.id, currentDay)]++; });
     return c;
   }, [active, alerts, currentDay]);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => { const prev = document.activeElement as HTMLElement | null; return () => { if (prev && prev !== document.body && document.contains(prev)) prev.focus({ preventScroll: true }); }; }, []);
   return (
-    <aside className={`panel-in pointer-events-auto flex max-h-[calc(100dvh-9rem)] w-[min(370px,calc(100vw-1.5rem))] flex-col ${glass}`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
-      <div className="flex shrink-0 items-start justify-between gap-2 border-b border-line p-3">
-        <div><div className="font-mono text-[10px] uppercase tracking-[0.12em] text-accent">{m.code}{active ? " · session mission" : ""}</div><h2 className="text-[16px] font-semibold text-ink">{m.name}</h2></div>
-        <button onClick={onClose} aria-label="Close panel" className="g-btn p-1.5"><X size={15} /></button>
+    <aside ref={ref} className={`${closing ? "panel-out" : "panel-spring"} pointer-events-auto flex max-h-[calc(100dvh-11.5rem)] w-[min(380px,calc(100vw-1.5rem))] flex-col glass-curve max-sm:max-h-[calc(100dvh-27rem)] max-sm:w-full`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
+      <div className="flex shrink-0 items-start justify-between gap-2 px-[18px] pb-3 pt-4">
+        <div><div className="p-lab">{m.code}{active ? " · session mission" : ""}</div><h2 className="mt-0.5 text-[17px] font-semibold text-ink">{m.name}</h2></div>
+        <button onClick={onClose} aria-label="Close panel" className="g-btn rounded-full p-1.5"><X size={15} /></button>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-b border-line p-3 text-[12px]">
-          <dt className="text-mute">Phase</dt><dd>{m.vehicle.phaseLabel}</dd>
-          <dt className="text-mute">Destination</dt><dd data-testid="dest">{m.destinationLabel}</dd>
-          <dt className="text-mute">Mission day</dt><dd className="num">{m.vehicle.day} / {m.vehicle.totalDays} · started {m.startDate}</dd>
-          <dt className="text-mute">Vehicle</dt><dd>{m.vehicle.name} <span className="font-mono text-mute">({m.vehicle.id})</span></dd>
-          <dt className="text-mute">Trajectory</dt><dd><span className="mr-1.5 inline-block h-0.5 w-4 align-middle" style={{ background: ROUTE_COLOR[m.route] }} />{CATEGORY_LABEL[tr.category]}</dd>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <dl className="p-sec grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">
+          <dt className="text-ink2">Phase</dt><dd>{m.vehicle.phaseLabel}</dd>
+          <dt className="text-ink2">Status</dt><dd><Level l={ship.overall} /></dd>
+          <dt className="text-ink2">Destination</dt><dd data-testid="dest">{m.destinationLabel}</dd>
+          <dt className="text-ink2">Mission day</dt><dd className="num">{m.vehicle.day} / {m.vehicle.totalDays} · started {m.startDate}</dd>
+          <dt className="text-ink2">Vehicle</dt><dd>{m.vehicle.name} <span className="font-mono text-mute">({m.vehicle.id})</span></dd>
+          <dt className="text-ink2">Trajectory</dt><dd><span className="mr-1.5 inline-block h-0.5 w-4 align-middle" style={{ background: ROUTE_COLOR[m.route] }} />{CATEGORY_LABEL[tr.category]}</dd>
         </dl>
-        <div className="border-b border-line p-3">
-          <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Crew ({m.crew.length})</div>
+        <div className="p-sec">
+          <div className="mb-1 p-lab">Crew ({m.crew.length})</div>
           <ul className="text-[12px]" data-testid="crew-list">{m.crew.map((c) => <li key={c.code}><span className="num font-semibold">{c.code}</span> <span className="text-mute">· {c.role}</span></li>)}</ul>
           <div className="mt-2 text-[12px]" data-testid="crew-health">
             <span className="text-mute">Crew health summary: </span>
             {crew ? <span>{[crew.nominal && `${crew.nominal} nominal`, crew.watch && `${crew.watch} watch`, crew.attention && `${crew.attention} attention`, crew.critical && `${crew.critical} critical`].filter(Boolean).join(" · ")}</span> : <span className="text-ink2">No crew health records for this mission</span>}
           </div>
+          <Link href="/crew" data-testid="crew-overview" className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-accent underline-offset-2 hover:underline">Crew Health Overview <ArrowRight size={11} /></Link>
         </div>
-        <div className="border-b border-line p-3" data-testid="ship-health" data-overall={ship.overall}>
-          <div className="mb-1.5 flex items-center justify-between"><span className="font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Spacecraft environment</span><Level l={ship.overall} /></div>
-          <div className="grid grid-cols-3 gap-1">
+        <div className="p-sec" data-testid="ship-health" data-overall={ship.overall}>
+          <div className="mb-1.5 flex items-center justify-between"><span className="p-lab">Spacecraft environment</span><Level l={ship.overall} /></div>
+          <div className="grid grid-cols-2 gap-x-4">
             {ship.readings.map((r) => (
-              <div key={r.key} className="rounded-xl border border-white/10 bg-white/[0.03] px-2 py-1.5" data-reading={r.key} data-level={r.status}>
-                <div className="text-[9px] uppercase tracking-wide text-mute">{r.label}</div>
-                <div className="num text-[12px] font-semibold">{r.value === null ? <span className="font-normal text-mute">No telemetry</span> : <>{r.value.toFixed(r.decimals)} <span className="text-[9px] font-normal text-mute">{r.unit}</span></>}</div>
+              <div key={r.key} className="p-row items-baseline border-b border-white/[0.06]" data-reading={r.key} data-level={r.status}>
+                <span className="text-[11px]"><span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: LEVEL_COLOR[r.status] }} />{r.label}</span>
+                <span className="num font-semibold text-ink">{r.value === null ? <span className="font-normal text-ink2">No telemetry</span> : <>{r.value.toFixed(r.decimals)} <span className="text-[9px] font-normal text-ink2">{r.unit}</span></>}</span>
               </div>
             ))}
           </div>
-          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Engineering status</div>
-          <ul className="mt-1 space-y-0.5 text-[11px]">{ship.subsystems.map((s) => <li key={s.key} className="flex justify-between" data-subsystem={s.key} data-level={s.status}><span className="text-ink2">{s.label}</span><Level l={s.status} /></li>)}</ul>
+          <div className="p-lab mt-3">Spacecraft systems</div>
+          <ul className="mt-1 text-[11px]">{ship.subsystems.map((s) => <li key={s.key} className="p-row border-b border-white/[0.06]" data-subsystem={s.key} data-level={s.status}><span className="text-ink2">{s.label}</span><Level l={s.status} /></li>)}</ul>
           <div className="mt-2 text-[11px] text-mute" data-testid="telemetry-time">Last telemetry: {ship.snapshot.timestamp ? <>{ship.snapshot.timestamp} (mission day {ship.snapshot.missionDay}) · <b className="font-medium text-ink2">{freshness(ship.snapshot)}</b></> : "none"} <span className="block">Source: {m.dataSource}</span></div>
         </div>
-        <div className="border-b border-line p-3">
-          <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Environmental warnings</div>
+        <div className="p-sec">
+          <div className="mb-1 p-lab">Environmental warnings</div>
           {ship.warnings.length === 0 ? <p className="text-[12px] text-ink2" data-testid="no-warnings">{ship.overall === "unknown" ? "Unknown. No telemetry received." : "None."}</p> : (
             <ul className="space-y-1 text-[12px]" data-testid="warnings">{ship.warnings.map((w) => <li key={w.id}><span className="mr-1.5 inline-block h-2 w-2 rounded-full" style={{ background: LEVEL_COLOR[w.level] }} />{w.title}<span className="block pl-3.5 text-[11px] text-mute">{w.detail}</span></li>)}</ul>
           )}
           <p className="mt-1.5 text-[10px] text-mute">A healthy spacecraft does not imply healthy crew, and ship measurements are not astronaut clinical values.</p>
         </div>
-        <div className="border-b border-line p-3">
-          <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Checkpoints (planned vs actual)</div>
+        <div className="p-sec">
+          <div className="mb-1 p-lab">Checkpoints (planned vs actual)</div>
           <ul className="space-y-1" data-testid="checkpoint-buttons">
             {tr.checkpoints.map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-2 text-[11px]">
@@ -104,15 +122,15 @@ function MissionPanel({ m, onClose, pickedCp, onPick, onJump, onOpen }: { m: Mis
             ))}
           </ul>
         </div>
-        <details className="border-b border-line p-3 text-[11px]" data-testid="traj-details">
-          <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-[0.12em] text-mute">Trajectory model · modeled, ephemeris-derived</summary>
-          <dl className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">{tr.metrics.map((x) => <div key={x.label} className="contents"><dt className="text-mute">{x.label}</dt><dd className="num text-right text-ink2">{x.value}</dd></div>)}</dl>
+        <details className="p-sec text-[11px]" data-testid="traj-details">
+          <summary className="cursor-pointer p-lab">Trajectory model · modeled, ephemeris-derived</summary>
+          <dl className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">{tr.metrics.map((x) => <div key={x.label} className="contents"><dt className="text-ink2">{x.label}</dt><dd className="num text-right text-ink2">{x.value}</dd></div>)}</dl>
           <p className="mt-2 text-mute">{tr.method}</p>
           <ul className="mt-1.5 list-disc space-y-0.5 pl-4 text-mute">{tr.assumptions.map((a) => <li key={a}>{a}</li>)}</ul>
         </details>
       </div>
-      <div className="shrink-0 border-t border-line p-3">
-        <Link href={`/mission/${m.id}`} onClick={onOpen} data-testid="open-mission" className="g-btn flex w-full items-center justify-center gap-1.5 px-3 py-2.5 font-mono text-[12px] font-semibold tracking-wide text-accent">OPEN MISSION <ArrowRight size={14} /></Link>
+      <div className="shrink-0 border-t border-white/[0.09] px-[18px] py-3.5">
+        <Link href={`/mission/${m.id}`} onClick={onOpen} data-testid="open-mission" className="open-btn flex w-full items-center justify-center gap-1.5 px-3 py-2.5 font-mono text-[12px] font-semibold tracking-wider">OPEN MISSION <ArrowRight size={14} /></Link>
       </div>
     </aside>
   );
@@ -137,7 +155,13 @@ export default function MissionNavigatorPage() {
   const [tick, setTick] = useState(0);
   const msRef = useRef(msOf(m0, m0.vehicle.day));
   useEffect(() => { setHydrated(true); setWebgl(hasWebGL()); setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches); }, []);
-  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape") { setSelected(null); setPicked(null); } }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
+  const [closing, setClosing] = useState(false);
+  const [scrubbing, setScrubbing] = useState(false);
+  useEffect(() => { const u = () => setScrubbing(false); window.addEventListener("pointerup", u); window.addEventListener("pointercancel", u); return () => { window.removeEventListener("pointerup", u); window.removeEventListener("pointercancel", u); }; }, []);
+  const closeRef = useRef<() => void>(() => {});
+  const closePanel = useCallback(() => { const fin = () => { setSelected(null); setPicked(null); setClosing(false); }; if (reduced) fin(); else { setClosing(true); window.setTimeout(fin, 260); } }, [reduced]);
+  closeRef.current = closePanel;
+  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape") closeRef.current(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, []);
 
   const m = m0, tr = trajectoryFor(m.id);
   const bump = useCallback(() => setTick((t) => t + 1), []);
@@ -220,18 +244,19 @@ export default function MissionNavigatorPage() {
       </header>
 
       {/* simulation clock (compact) */}
-      <div className="pointer-events-auto absolute bottom-12 left-1/2 w-[min(980px,calc(100vw-1.5rem))] -translate-x-1/2 glass px-3 py-2" data-testid="sim-bar" data-sim-state={live ? "live" : "replay"}>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <button onClick={goLive} aria-label="Return to live mission clock" data-testid="sim-now" {...chipProps(live, "inline-flex items-center gap-1.5")}><span className={`inline-block h-2 w-2 rounded-full ${live ? "bg-lime nav-blink" : "bg-mute"}`} /> LIVE</button>
-          <button onClick={() => setDay(tr.minDay)} aria-label="Go back to mission start" data-testid="sim-reset" {...chipProps(false, "inline-flex items-center gap-1")}><SkipBack size={12} /> START</button>
-          <select value="" onChange={(e) => { const c = tr.checkpoints.find((x) => x.id === e.target.value); if (c) { setDay(c.plannedDay); setPicked({ missionId: m.id, cpId: c.id }); } }} aria-label="Go back to a completed checkpoint" data-testid="jump" className="g-btn bg-black px-2 py-1 font-mono text-[11px] text-ink">
-            <option value="">go back to…</option>{tr.checkpoints.filter((c) => c.plannedDay <= liveDay).map((c) => <option key={c.id} value={c.id}>{c.label} ({fmtT(c.plannedDay - 1)})</option>)}</select>
-          <div className="relative min-w-[140px] flex-1">
-            <input type="range" min={tr.minDay} max={liveDay} step={Math.max(1e-6, (liveDay - tr.minDay) / 4000)} value={Math.min(liveDay, Math.max(tr.minDay, day))} onChange={(e) => setDay(Number(e.target.value))} aria-label="Simulation time" data-testid="scrub" className="w-full accent-[#38C9F4]" />
-            {tr.checkpoints.filter((c) => c.plannedDay <= liveDay).map((c) => <span key={c.id} title={c.label} className="pointer-events-none absolute top-0 h-2 w-px bg-ink/60" style={{ left: `${((c.plannedDay - tr.minDay) / Math.max(1e-6, liveDay - tr.minDay)) * 100}%` }} />)}
+      <div className="glass-dock pointer-events-auto absolute bottom-12 left-1/2 w-[min(980px,calc(100vw-1.5rem))] -translate-x-1/2 px-4 py-2.5 max-sm:bottom-[7.25rem] max-sm:rounded-[22px] max-sm:px-3" data-testid="sim-bar" data-sim-state={live ? "live" : "replay"}>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+          <button onClick={goLive} aria-label="Return to live mission clock" data-testid="sim-now" {...chipProps(live, "inline-flex items-center gap-1.5 !rounded-full")}><span className={`inline-block h-2 w-2 rounded-full ${live ? "bg-lime nav-blink" : "bg-mute"}`} /> LIVE</button>
+          <button onClick={() => setDay(tr.minDay)} aria-label="Go back to mission start" data-testid="sim-reset" {...chipProps(false, "inline-flex items-center gap-1 !rounded-full")}><SkipBack size={12} /> START</button>
+          <CheckpointMenu items={tr.checkpoints.filter((c) => c.plannedDay <= liveDay).map((c) => ({ id: c.id, label: `${c.label} (${fmtT(c.plannedDay - 1)})` }))} onPick={(id) => { const c = tr.checkpoints.find((x) => x.id === id); if (c) { setDay(c.plannedDay); setPicked({ missionId: m.id, cpId: c.id }); } }} />
+          <div className="relative min-w-[140px] flex-1 max-sm:order-last max-sm:basis-full">
+            {(() => { const lo = tr.minDay, hi = Math.max(lo + 1e-6, liveDay), v = Math.min(hi, Math.max(lo, day)), pct = ((v - lo) / (hi - lo)) * 100; return (<>
+              <input type="range" min={lo} max={liveDay} step={Math.max(1e-6, (liveDay - lo) / 4000)} value={v} onChange={(e) => setDay(Number(e.target.value))} onPointerDown={() => setScrubbing(true)} onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) setScrubbing(true); }} onBlur={() => setScrubbing(false)} aria-label="Mission time" aria-valuetext={metOf(day - 1)} data-testid="scrub" data-drag={scrubbing} className="tl" style={{ ["--p" as string]: `${pct}%` }} />
+              {tr.checkpoints.filter((c) => c.plannedDay <= liveDay).map((c) => <span key={c.id} title={c.label} className="pointer-events-none absolute top-1/2 h-2 w-px -translate-y-1/2 bg-white/50" style={{ left: `${((c.plannedDay - lo) / (hi - lo)) * 100}%` }} />)}
+              <span aria-hidden className="num pointer-events-none absolute -top-7 -translate-x-1/2 whitespace-nowrap rounded-full border border-accent/40 bg-black/80 px-2 py-0.5 font-mono text-[10px] text-ink transition-opacity duration-150" style={{ left: `clamp(40px, ${pct}%, calc(100% - 40px))`, opacity: scrubbing ? 1 : 0 }} data-testid="scrub-tip">{metOf(day - 1)}</span></>); })()}
           </div>
           <span className="num font-mono text-[12px] font-semibold text-ink" data-testid="sim-t">{metOf(day - 1)}</span>
-          <span className={`rounded-lg border px-2 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model; the mission is fictional.">{live ? "● LIVE" : "REPLAY · PAST"}</span>
+          <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model; the mission is fictional.">{live ? "● LIVE" : "REPLAY · PAST"}</span>
         </div>
         <div className="sr-only" data-testid="sim-readout"><span>{dateOfDay(m, day)}</span><span data-testid="sim-phase">{point?.phase ?? "—"}</span></div>
       </div>
@@ -242,21 +267,21 @@ export default function MissionNavigatorPage() {
             <button onClick={() => setPicked(null)} aria-label="Close checkpoint" className="text-mute hover:text-ink"><X size={14} /></button></div>
           <p className="mt-1 text-[12px] text-ink2">{pcp.description}</p>
           <dl className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-[11px]">
-            <dt className="text-mute">Phase</dt><dd>{pcp.phase}</dd>
-            <dt className="text-mute">Planned</dt><dd className="num">{fmtT(pcp.plannedDay - 1)} · {dateOfDay(pm, pcp.plannedDay)}</dd>
-            <dt className="text-mute">Actual</dt><dd>{pcp.actualDay === null ? "Not recorded" : `${fmtT(pcp.actualDay - 1)}`}</dd>
-            <dt className="text-mute">Status</dt><dd><b className="font-medium text-ink">{checkpointStatus(pm, pcp)}</b> <span className="text-mute">(mission day {pm.vehicle.day})</span></dd>
+            <dt className="text-ink2">Phase</dt><dd>{pcp.phase}</dd>
+            <dt className="text-ink2">Planned</dt><dd className="num">{fmtT(pcp.plannedDay - 1)} · {dateOfDay(pm, pcp.plannedDay)}</dd>
+            <dt className="text-ink2">Actual</dt><dd>{pcp.actualDay === null ? "Not recorded" : `${fmtT(pcp.actualDay - 1)}`}</dd>
+            <dt className="text-ink2">Status</dt><dd><b className="font-medium text-ink">{checkpointStatus(pm, pcp)}</b> <span className="text-mute">(mission day {pm.vehicle.day})</span></dd>
           </dl>
           <p className="mt-1 text-[10px] text-mute">{pcp.note}</p>
           <button onClick={() => { if (pm.id === m.id) { setDay(pcp.plannedDay); } }} disabled={pm.id !== m.id} {...chipProps(false, "mt-2")} data-testid="cp-jump">Go back to this checkpoint</button>
         </div>
       )}
 
-      {panelM && <div className="pointer-events-none absolute right-3 top-16 flex"><MissionPanel m={panelM} onClose={() => { setSelected(null); setPicked(null); }} pickedCp={picked?.missionId === panelM.id ? picked.cpId : null}
+      {panelM && <div className="pointer-events-none absolute right-3 top-16 flex max-sm:inset-x-2 max-sm:bottom-[16rem] max-sm:top-auto max-sm:items-end"><MissionPanel m={panelM} closing={closing} onClose={closePanel} pickedCp={picked?.missionId === panelM.id ? picked.cpId : null}
         onPick={(cp) => { objClick.current = Date.now(); setPicked({ missionId: panelM.id, cpId: cp }); }} onJump={(d) => { if (panelM.id === m.id) { setDay(d); } else select(panelM.id); }} onOpen={() => selectMission(panelM.id)} /></div>}
 
       <footer className="pointer-events-auto absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-x-5 gap-y-1 glass-foot px-4 py-2.5 font-mono text-[11px] text-ink2" data-testid="telemetry-bar">
-        <ul className="flex flex-wrap items-center gap-x-4 gap-y-0.5" aria-label="Legend">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-0.5 max-sm:hidden" aria-label="Legend">
           {(Object.keys(ROUTE_LABEL) as (keyof typeof ROUTE_LABEL)[]).map((k) => <li key={k} className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5" style={{ background: ROUTE_COLOR[k] }} />{ROUTE_LABEL[k]}</li>)}
           <li className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-ink" />Checkpoint (MCC)</li>
           <li className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 bg-warn" />Planned maneuver</li>

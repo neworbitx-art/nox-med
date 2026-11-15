@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { dayToDate, elapsedDays, labsFor } from "@/lib/data";
+import { dayToDate, elapsedDays, labsFor, mission } from "@/lib/data";
 import { useMission } from "@/lib/store";
 import { ENV_KEYS, ENV_VARS, clockOf, co2FractionPct, co2Ppm, envPoints, envSeries, missingIntervals, nearest, type EnvVar } from "@/lib/telemetry";
 import { WINDOWS, nearLines, toPts, truncated, windowOf, yDomain } from "@/lib/chartutil";
@@ -54,7 +54,7 @@ export default function Environment() {
   return (
     <>
       <PageHeader code="MOD-ENV" title="Environmental Monitoring"
-        desc="Hourly cabin telemetry for NOX-01 with true timestamps shared with laboratory sampling. Missing data is shown as gaps, never filled in." />
+        desc={`Hourly cabin telemetry for ${mission.id} with true timestamps shared with laboratory sampling. Missing data is shown as gaps, never filled in.`} />
 
       <Card className="mb-4" code="SHP-ENV" title="Spacecraft status (selected mission)" subtitle="Environment and engineering state of the vehicle. Separate from astronaut health.">
         <ShipHealthPanel m={missionById(missionId)!} />

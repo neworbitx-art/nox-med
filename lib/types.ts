@@ -1,4 +1,4 @@
-export type AstronautId = "A-01" | "A-02" | "A-03" | "A-04";
+export type AstronautId = string;
 export type DataOrigin = "simulated" | "imported";
 
 export type MetricKey =

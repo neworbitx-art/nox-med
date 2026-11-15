@@ -1,4 +1,4 @@
-import { astronauts, mission as activeMissionData } from "./data";
+import { astronauts, mission as activeMissionData, DATASETS } from "./data";
 import { localReplayAdapter, type TelemetrySnapshot } from "./telemetry-adapter";
 import type { AstronautId, EnvironmentalSample } from "./types";
 
@@ -96,22 +96,40 @@ export const MISSIONS: MissionRecord[] = [
     id: "NOX-02", name: "Lunar Gateway Sortie", code: "NOX-02", destination: "moon", destinationLabel: "Moon", startDate: "2031-11-05",
     vehicle: { id: "NOX-CV-02", name: "NOX Cislunar Vehicle", phase: "translunar", phaseLabel: "Translunar coast", statusText: "Outbound to lunar orbit", day: 5, totalDays: 21 },
     route: "lunar-transfer",
-    crew: [{ code: "L-01", role: "Commander" }, { code: "L-02", role: "Pilot" }, { code: "L-03", role: "Mission specialist" }],
-    subsystems: [], dataSource: "No telemetry source connected", hasCrewData: false,
+    crew: DATASETS["NOX-02"].astronauts.map((a) => ({ code: a.id, role: a.role, astronautId: a.id })),
+    subsystems: [
+      sub("power", "Power", "nominal", "Bus nominal; solar arrays within plan."),
+      sub("comms", "Communications", "nominal", "Deep Space Network link nominal."),
+      sub("scrubber", "Environmental control / life support", "nominal", "CO₂ removal keeping pace with the compact crew cabin."),
+      sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
+    ],
+    dataSource: "Synthetic demonstration dataset (replay)", hasCrewData: true,
   },
   {
     id: "NOX-03", name: "Earth Orbit Station Rotation", code: "NOX-03", destination: "earth", destinationLabel: "Earth (low orbit)", startDate: "2031-09-13",
     vehicle: { id: "NOX-SM-03", name: "NOX Station Module", phase: "earth-orbit", phaseLabel: "Low Earth orbit", statusText: "Station operations", day: 58, totalDays: 180 },
     route: "earth-orbit",
-    crew: [{ code: "E-01", role: "Station commander" }, { code: "E-02", role: "Flight engineer" }],
-    subsystems: [], dataSource: "No telemetry source connected", hasCrewData: false,
+    crew: DATASETS["NOX-03"].astronauts.map((a) => ({ code: a.id, role: a.role, astronautId: a.id })),
+    subsystems: [
+      sub("power", "Power", "nominal", "Station bus nominal."),
+      sub("comms", "Communications", "nominal", "Relay link nominal."),
+      sub("scrubber", "Environmental control / life support", "watch", "Cabin CO₂ has crept upward since about day 30. Scrubber performance has not been diagnosed."),
+      sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
+    ],
+    dataSource: "Synthetic demonstration dataset (replay)", hasCrewData: true,
   },
   {
     id: "NOX-04", name: "Mars Orbit Relay", code: "NOX-04", destination: "mars", destinationLabel: "Mars (orbit)", startDate: "2031-04-13",
     vehicle: { id: "NOX-RV-04", name: "NOX Relay Vehicle", phase: "mars-orbit", phaseLabel: "Mars orbit", statusText: "Relay on station", day: 211, totalDays: 540 },
     route: "mars-orbit",
-    crew: [{ code: "R-01", role: "Commander" }, { code: "R-02", role: "Flight engineer" }],
-    subsystems: [], dataSource: "No telemetry source connected", hasCrewData: false,
+    crew: DATASETS["NOX-04"].astronauts.map((a) => ({ code: a.id, role: a.role, astronautId: a.id })),
+    subsystems: [
+      sub("power", "Power", "nominal", "Bus nominal; array output within plan."),
+      sub("comms", "Communications", "nominal", "Relay link nominal; one-way light time applies."),
+      sub("scrubber", "Environmental control / life support", "watch", "Cabin CO₂ above the watch line since about day 150. Scrubber performance has not been diagnosed."),
+      sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
+    ],
+    dataSource: "Synthetic demonstration dataset (replay)", hasCrewData: true,
   },
 ];
 

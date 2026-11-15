@@ -4,7 +4,7 @@
  * via elapsedDays(), so every series shares one true time axis.
  */
 import type { ExerciseEvent, HourlyEnvSample, LabResult, VitalSign } from "./types";
-import { elapsedDays, hourlyEnv } from "./data";
+import { activeDatasetId, elapsedDays, hourlyEnv } from "./data";
 import { mean, pearson, spearman } from "./analysis";
 import { comparable } from "./validity";
 
@@ -32,9 +32,9 @@ export const ENV_KEYS = Object.keys(ENV_VARS) as EnvVar[];
 export interface EnvPoint { hour: number; t: number; v: Record<EnvVar, number | null> }
 export const hourT = (hour: number) => hour / 24 + 1;
 
-let cache: EnvPoint[] | null = null;
+let cache: EnvPoint[] | null = null, cacheId = "";
 export function envPoints(src: HourlyEnvSample[] = hourlyEnv): EnvPoint[] {
-  if (src === hourlyEnv && cache) return cache;
+  if (src === hourlyEnv && cache && cacheId === activeDatasetId()) return cache;
   let dose = 0;
   const out = src.map((s): EnvPoint => {
     if (s.radiationUSvH !== null) dose += s.radiationUSvH / 1000; // µSv/h × 1 h → mSv
@@ -44,7 +44,7 @@ export function envPoints(src: HourlyEnvSample[] = hourlyEnv): EnvPoint[] {
       dose: s.radiationUSvH !== null ? dose : null,
     } };
   });
-  if (src === hourlyEnv) cache = out;
+  if (src === hourlyEnv) { cache = out; cacheId = activeDatasetId(); }
   return out;
 }
 
