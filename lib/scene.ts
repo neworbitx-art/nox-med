@@ -5,7 +5,8 @@ import { compress, toScene, DISPLAY, HELIO_UNITS_PER_AU } from "./display";
 import { MISSIONS, missionById, type MissionRecord } from "./missions";
 import { trajectoryFor, dayOfMs, type TrajPoint, type Trajectory } from "./trajectory";
 
-export type ViewMode = "overview" | "local" | "interplanetary";
+/** network = default mission-network view; earth-moon / mars = planet-centred Local views; interplanetary = Sun-centred physics view. */
+export type ViewMode = "network" | "earth-moon" | "mars" | "interplanetary";
 export const msOf = (m: MissionRecord, day: number) => trajectoryFor(m.id).epochMs + (day - 1) * 86400000;
 
 /** Mission-day of another mission at a given UTC time (the global scene clock is calendar time). */

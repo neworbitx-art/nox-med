@@ -39,7 +39,7 @@ export function Earth({ radius, msRef, onClick, onHover }: BodyProps) {
   return (
     <group quaternion={q} onClick={click("earth", onClick)} onPointerOver={(e) => { e.stopPropagation(); onHover("earth"); }} onPointerOut={() => onHover(null)}>
       <group ref={spin}>
-        <mesh><sphereGeometry args={[radius, 128, 96]} /><meshPhongMaterial map={day} bumpMap={bump} bumpScale={0.9} specularMap={spec} specular={new THREE.Color("#3a4a5c")} shininess={22} /></mesh>
+        <mesh><sphereGeometry args={[radius, 128, 96]} /><meshPhongMaterial map={day} bumpMap={bump} bumpScale={0.9} specularMap={spec} specular={new THREE.Color("#1c2630")} shininess={14} /></mesh>
         <mesh ref={cl}><sphereGeometry args={[radius * 1.011, 96, 72]} /><meshStandardMaterial map={clouds} transparent opacity={0.85} depthWrite={false} roughness={1} /></mesh>
       </group>
       <Atmosphere r={radius * 1.065} color="#5aa9ff" k={0.9} />
@@ -109,8 +109,8 @@ export function Starfield() {
   useEffect(() => () => pts.dispose(), [pts]);
   return (
     <group>
-      <mesh scale={-1}><sphereGeometry args={[320, 48, 32]} /><meshBasicMaterial map={map} color={new THREE.Color(2.0, 2.0, 2.2)} toneMapped={false} depthWrite={false} /></mesh>
-      <points geometry={pts}><pointsMaterial vertexColors size={1.4} sizeAttenuation={false} transparent opacity={0.9} depthWrite={false} toneMapped={false} /></points>
+      <mesh scale={-1}><sphereGeometry args={[320, 48, 32]} /><meshBasicMaterial map={map} color={new THREE.Color(0.7, 0.7, 0.8)} toneMapped={false} depthWrite={false} /></mesh>
+      <points geometry={pts}><pointsMaterial vertexColors size={1.4} sizeAttenuation={false} transparent opacity={0.75} depthWrite={false} toneMapped={false} /></points>
     </group>
   );
 }

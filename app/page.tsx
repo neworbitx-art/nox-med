@@ -9,6 +9,7 @@ import { statusFor } from "@/lib/alerts";
 import { ACTIVE_MISSION_ID, BODY_LABEL, LEVEL_LABEL, MISSIONS, ROUTE_LABEL, isActiveMission, missionById, missionDate, shipHealthFor, type MissionRecord } from "@/lib/missions";
 import { CATEGORY_LABEL, checkpointStatus, trajectoryFor } from "@/lib/trajectory";
 import { msOf, type ViewMode } from "@/lib/scene";
+import { NET_DISCLOSURE, modelTelemetry } from "@/lib/network";
 import { freshness } from "@/lib/telemetry-adapter";
 import { useShellNav } from "@/components/Shell";
 import { MissionSelector } from "@/components/MissionSelector";
@@ -24,9 +25,10 @@ const chip = (on: boolean) => `rounded-sm border px-2 py-1 font-mono text-[11px]
 const SPEEDS: { label: string; v: number }[] = [{ label: "1 min/s", v: 60 }, { label: "10 min/s", v: 600 }, { label: "1 h/s", v: 3600 }, { label: "6 h/s", v: 21600 }, { label: "1 d/s", v: 86400 }, { label: "5 d/s", v: 432000 }];
 const DEFAULT_SPEED: Record<string, number> = { "NOX-01": 86400, "NOX-02": 21600, "NOX-03": 600, "NOX-04": 600 };
 const MODES: { id: ViewMode; label: string; hint: string }[] = [
-  { id: "overview", label: "OVERVIEW", hint: "Sun-centred, all active missions" },
-  { id: "local", label: "LOCAL", hint: "Planet-centred (or vehicle-following for Sun-centred transfers)" },
-  { id: "interplanetary", label: "INTERPLANETARY", hint: "Sun-centred, focused on the selected mission" },
+  { id: "network", label: "OVERVIEW", hint: "Mission network: schematic composition of all missions (visually scaled)" },
+  { id: "earth-moon", label: "EARTH–MOON", hint: "Earth-centred Local view with the Moon (visually scaled)" },
+  { id: "mars", label: "MARS", hint: "Mars-centred Local view (visually scaled)" },
+  { id: "interplanetary", label: "INTERPLANETARY", hint: "Sun-centred physics view from the stored ephemerides (heliocentric distances linear)" },
 ];
 
 function hasWebGL() { try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch { return false; } }
@@ -34,6 +36,8 @@ function Level({ l }: { l: ReturnType<typeof shipHealthFor>["overall"] }) {
   return <span className="inline-flex items-center gap-1.5 text-[11px]" data-level={l}><span className="inline-block h-2 w-2 rounded-full" style={{ background: LEVEL_COLOR[l] }} />{LEVEL_LABEL[l]}</span>;
 }
 const fmtT = (days: number) => { const neg = days < 0, a = Math.abs(days), d = Math.floor(a), h = Math.floor((a - d) * 24), mi = Math.floor(((a - d) * 24 - h) * 60); return `T${neg ? "−" : "+"}${d}d ${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}`; };
+const metOf = (days: number) => { const neg = days < 0, a = Math.abs(days) * 86400, d = Math.floor(a / 86400), h = Math.floor((a % 86400) / 3600), mi = Math.floor((a % 3600) / 60), sec = Math.floor(a % 60); return `T${neg ? "−" : "+"}${d}d ${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(sec).padStart(2, "0")}`; };
+const fmtKm = (km: number) => km >= 1e6 ? `${(km / 1e6).toFixed(1)}M km` : km >= 1e4 ? `${Math.round(km / 1e3).toLocaleString("en-US")}k km` : `${Math.round(km).toLocaleString("en-US")} km`;
 const dateOfDay = (m: MissionRecord, day: number) => new Date(msOf(m, day)).toISOString().slice(0, 16).replace("T", " ") + " UTC";
 
 function MissionPanel({ m, onClose, pickedCp, onPick, onJump, onOpen }: { m: MissionRecord; onClose: () => void; pickedCp: string | null; onPick: (cp: string) => void; onJump: (day: number) => void; onOpen: () => void }) {
@@ -46,7 +50,7 @@ function MissionPanel({ m, onClose, pickedCp, onPick, onJump, onOpen }: { m: Mis
     return c;
   }, [active, alerts, currentDay]);
   return (
-    <aside className={`panel-in pointer-events-auto flex max-h-[calc(100dvh-7rem)] w-[min(370px,calc(100vw-1.5rem))] flex-col rounded-sm ${glass}`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
+    <aside className={`panel-in pointer-events-auto flex max-h-[calc(100dvh-9rem)] w-[min(370px,calc(100vw-1.5rem))] flex-col rounded-sm ${glass}`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
       <div className="flex shrink-0 items-start justify-between gap-2 border-b border-line p-3">
         <div><div className="font-mono text-[10px] uppercase tracking-[0.12em] text-accent">{m.code}{active ? " · session mission" : ""}</div><h2 className="text-[16px] font-semibold text-ink">{m.name}</h2></div>
         <button onClick={onClose} aria-label="Close panel" className="rounded-sm p-1 text-mute hover:text-ink"><X size={15} /></button>
@@ -120,7 +124,7 @@ export default function MissionNavigatorPage() {
   const { openNav } = useShellNav();
   const m0 = missionById(missionId)!;
   const [selected, setSelected] = useState<string | null>(null);
-  const [mode, setMode] = useState<ViewMode>("overview");
+  const [mode, setMode] = useState<ViewMode>("network");
   const [picked, setPicked] = useState<{ missionId: string; cpId: string } | null>(null);
   const [hover, setHover] = useState<HoverInfo | null>(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -171,6 +175,7 @@ export default function MissionNavigatorPage() {
   const day = (msRef.current - msOf(m, 1)) / 86400000 + 1;
   const point = tr.at(Math.min(tr.maxDay, Math.max(tr.minDay, day)));
   const atNow = Math.abs(msRef.current - nowMs) < 60000;
+  const tele = useMemo(() => modelTelemetry(m.id, Math.min(tr.maxDay, Math.max(tr.minDay, day))), [m.id, day, tr]); // eslint-disable-line react-hooks/exhaustive-deps
   const panelM = selected ? missionById(selected) ?? null : null;
   const session = missionById(ACTIVE_MISSION_ID)!;
   const matches = q.trim() ? MISSIONS.filter((x) => `${x.code} ${x.name} ${x.destinationLabel} ${x.crew.map((c) => c.role).join(" ")}`.toLowerCase().includes(q.trim().toLowerCase())) : [];
@@ -198,14 +203,10 @@ export default function MissionNavigatorPage() {
         {webgl && !ready && <div className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[11px] tracking-[0.2em] text-mute" data-testid="loading">LOADING SCENE…</div>}
       </div>
 
-      <header className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start gap-2 bg-gradient-to-b from-bg via-bg/60 to-transparent p-3">
+      <header className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-center gap-2 border-b border-line/70 bg-bg/80 px-3 py-2 backdrop-blur-sm">
         <button onClick={openNav} aria-label="Open navigation menu" className={`pointer-events-auto rounded-sm p-1.5 ${glass}`}><Menu size={16} /></button>
         <div className="pointer-events-auto flex flex-col leading-tight"><span className="font-mono text-[13px] font-semibold tracking-[0.18em] text-ink">NOX MED</span><span className="font-mono text-[9px] tracking-[0.16em] text-mute">MISSION NAVIGATOR</span></div>
         <div className="pointer-events-auto"><MissionSelector dark onChange={() => { setSelected(null); }} /></div>
-        <div className={`pointer-events-auto flex items-center gap-2 rounded-sm px-2 py-1 text-[11px] ${glass}`} data-testid="active-indicator">
-          <span className="inline-block h-2 w-2 rounded-full bg-lime shadow-[0_0_6px_#A3E635]" />
-          <span className="font-mono tracking-wide">{session.code}</span><span className="hidden text-mute 2xl:inline">session · day {session.vehicle.day}/{session.vehicle.totalDays}</span>
-        </div>
         <div className="pointer-events-auto flex flex-wrap items-center gap-1" role="group" aria-label="Mission filter" data-testid="filter">
           <button onClick={reset} aria-pressed={!selected} className={chip(!selected)} data-filter="all">ALL</button>
           {MISSIONS.map((x) => <button key={x.id} onClick={() => select(x.id, true)} aria-pressed={selected === x.id} className={chip(selected === x.id)} data-filter={x.id}>{x.code}</button>)}
@@ -221,32 +222,27 @@ export default function MissionNavigatorPage() {
         </div>
       </header>
 
-      {/* simulation clock */}
-      <div className={`pointer-events-auto absolute bottom-3 left-1/2 w-[min(760px,calc(100vw-1.5rem))] -translate-x-1/2 rounded-sm p-2.5 ${glass}`} data-testid="sim-bar" data-sim-state={atNow ? "now" : "simulated"}>
-        <div className="flex flex-wrap items-center gap-2">
+      {/* simulation clock (compact) */}
+      <div className="pointer-events-auto absolute bottom-12 left-1/2 w-[min(980px,calc(100vw-1.5rem))] -translate-x-1/2 rounded-sm border border-line/70 bg-bg/55 px-2 py-1.5 backdrop-blur-sm" data-testid="sim-bar" data-sim-state={atNow ? "now" : "simulated"}>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <button onClick={() => { if (!playing && msRef.current >= maxMs) msRef.current = minMs; setPlaying((p) => !p); }} aria-label={playing ? "Pause simulation" : "Play simulation"} data-testid="play" className={`${chip(playing)} inline-flex items-center gap-1`}>{playing ? <Pause size={12} /> : <Play size={12} />}{playing ? "PAUSE" : "PLAY"}</button>
           <button onClick={() => { setPlaying(false); setDay(tr.minDay); }} aria-label="Reset simulation to mission start" data-testid="sim-reset" className={`${chip(false)} inline-flex items-center gap-1`}><SkipBack size={12} /> START</button>
           <button onClick={() => { setPlaying(false); msRef.current = nowMs; bump(); }} aria-label="Jump to current mission time" data-testid="sim-now" className={`${chip(atNow)} inline-flex items-center gap-1`}><Radio size={12} /> NOW</button>
-          <label className="flex items-center gap-1 text-[11px] text-mute">Speed
-            <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))} aria-label="Simulation speed" data-testid="speed" className="rounded-sm border border-line bg-bg px-1 py-0.5 font-mono text-[11px] text-ink">{SPEEDS.map((s) => <option key={s.v} value={s.v}>{s.label}</option>)}</select></label>
-          <label className="flex items-center gap-1 text-[11px] text-mute">Jump to
-            <select value="" onChange={(e) => { const c = tr.checkpoints.find((x) => x.id === e.target.value); if (c) { setPlaying(false); setDay(c.plannedDay); setPicked({ missionId: m.id, cpId: c.id }); } }} aria-label="Jump to checkpoint" data-testid="jump" className="rounded-sm border border-line bg-bg px-1 py-0.5 font-mono text-[11px] text-ink">
-              <option value="">checkpoint…</option>{tr.checkpoints.map((c) => <option key={c.id} value={c.id}>{c.label} ({fmtT(c.plannedDay - 1)})</option>)}</select></label>
-          <span className={`ml-auto rounded-sm border px-1.5 py-0.5 font-mono text-[10px] tracking-wide ${atNow ? "border-lime/60 text-lime" : "border-warn/60 text-warn"}`} data-testid="sim-state">{simState}</span>
+          <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))} aria-label="Simulation speed" data-testid="speed" className="rounded-sm border border-line bg-bg px-1 py-0.5 font-mono text-[11px] text-ink">{SPEEDS.map((s) => <option key={s.v} value={s.v}>{s.label}</option>)}</select>
+          <select value="" onChange={(e) => { const c = tr.checkpoints.find((x) => x.id === e.target.value); if (c) { setPlaying(false); setDay(c.plannedDay); setPicked({ missionId: m.id, cpId: c.id }); } }} aria-label="Jump to checkpoint" data-testid="jump" className="rounded-sm border border-line bg-bg px-1 py-0.5 font-mono text-[11px] text-ink">
+            <option value="">jump to…</option>{tr.checkpoints.map((c) => <option key={c.id} value={c.id}>{c.label} ({fmtT(c.plannedDay - 1)})</option>)}</select>
+          <div className="relative min-w-[140px] flex-1">
+            <input type="range" min={tr.minDay} max={tr.maxDay} step={(tr.maxDay - tr.minDay) / 4000} value={Math.min(tr.maxDay, Math.max(tr.minDay, day))} onChange={(e) => { setPlaying(false); setDay(Number(e.target.value)); }} aria-label="Simulation time" data-testid="scrub" className="w-full accent-[#38C9F4]" />
+            {tr.checkpoints.map((c) => <span key={c.id} title={c.label} className="pointer-events-none absolute top-0 h-2 w-px bg-ink/60" style={{ left: `calc(${((c.plannedDay - tr.minDay) / (tr.maxDay - tr.minDay)) * 100}% )` }} />)}
+          </div>
+          <span className="num font-mono text-[11px] font-semibold text-ink" data-testid="sim-t">{fmtT(day - 1)}</span>
+          <span className={`rounded-sm border px-1.5 py-0.5 font-mono text-[10px] tracking-wide ${atNow ? "border-lime/60 text-lime" : "border-warn/60 text-warn"}`} data-testid="sim-state" title={`Simulated playback of modeled trajectories, not a live feed. Real mission time is day ${m.vehicle.day} (${missionDate(m, m.vehicle.day)}).`}>{simState}</span>
         </div>
-        <div className="relative mt-2">
-          <input type="range" min={tr.minDay} max={tr.maxDay} step={(tr.maxDay - tr.minDay) / 4000} value={Math.min(tr.maxDay, Math.max(tr.minDay, day))} onChange={(e) => { setPlaying(false); setDay(Number(e.target.value)); }} aria-label="Simulation time" data-testid="scrub" className="w-full accent-[#38C9F4]" />
-          {tr.checkpoints.map((c) => <span key={c.id} title={c.label} className="pointer-events-none absolute top-0 h-2 w-px bg-ink/60" style={{ left: `calc(${((c.plannedDay - tr.minDay) / (tr.maxDay - tr.minDay)) * 100}% )` }} />)}
-        </div>
-        <div className="num mt-1 flex flex-wrap items-center gap-x-4 text-[11px] text-ink2" data-testid="sim-readout">
-          <span className="font-semibold text-ink" data-testid="sim-t">{fmtT(day - 1)}</span><span>{dateOfDay(m, day)}</span><span>mission day {day.toFixed(2)}/{m.vehicle.totalDays}</span>
-          <span className="text-accent" data-testid="sim-phase">{point?.phase ?? "—"}</span><span className="text-mute">{m.code} · {mode}</span>
-        </div>
-        <div className="mt-0.5 text-[10px] text-mute">Simulated playback of modeled trajectories, not a live feed. Real mission time is day {m.vehicle.day} ({missionDate(m, m.vehicle.day)}).</div>
+        <div className="sr-only" data-testid="sim-readout"><span>{dateOfDay(m, day)}</span><span data-testid="sim-phase">{point?.phase ?? "—"}</span></div>
       </div>
 
       {pcp && pm && (
-        <div className={`pointer-events-auto absolute bottom-40 left-3 w-[min(310px,calc(100vw-1.5rem))] rounded-sm p-3 ${glass}`} data-testid="checkpoint-detail" data-cp={pcp.id}>
+        <div className={`pointer-events-auto absolute bottom-28 left-3 w-[min(310px,calc(100vw-1.5rem))] rounded-sm p-3 ${glass}`} data-testid="checkpoint-detail" data-cp={pcp.id}>
           <div className="flex items-start justify-between"><div><div className="font-mono text-[10px] tracking-[0.12em] text-accent">{pm.code} · CHECKPOINT</div><div className="text-[14px] font-semibold">{pcp.label}</div></div>
             <button onClick={() => setPicked(null)} aria-label="Close checkpoint" className="text-mute hover:text-ink"><X size={14} /></button></div>
           <p className="mt-1 text-[12px] text-ink2">{pcp.description}</p>
@@ -261,13 +257,25 @@ export default function MissionNavigatorPage() {
         </div>
       )}
 
-      {panelM && <div className="pointer-events-none absolute right-3 top-24 flex"><MissionPanel m={panelM} onClose={() => { setSelected(null); setPicked(null); }} pickedCp={picked?.missionId === panelM.id ? picked.cpId : null}
+      {panelM && <div className="pointer-events-none absolute right-3 top-16 flex"><MissionPanel m={panelM} onClose={() => { setSelected(null); setPicked(null); }} pickedCp={picked?.missionId === panelM.id ? picked.cpId : null}
         onPick={(cp) => { objClick.current = Date.now(); setPicked({ missionId: panelM.id, cpId: cp }); }} onJump={(d) => { if (panelM.id === m.id) { setPlaying(false); setDay(d); } else select(panelM.id); }} onOpen={() => selectMission(panelM.id)} /></div>}
 
-      <div className="pointer-events-none absolute bottom-3 left-3 hidden max-w-[300px] xl:block">
-        <ul className="mb-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[10px] text-ink2">{(Object.keys(ROUTE_LABEL) as (keyof typeof ROUTE_LABEL)[]).map((k) => <li key={k} className="flex items-center gap-1"><span className="inline-block h-0.5 w-3" style={{ background: ROUTE_COLOR[k] }} />{ROUTE_LABEL[k]}</li>)}</ul>
-        <p className="text-[10px] leading-snug text-mute">Modeled from locally stored ephemerides (J2000 ecliptic) with Kepler/Lambert propagation. Body sizes and Local-view distances are visually scaled. Missions are fictional.</p>
-      </div>
+      <footer className="pointer-events-auto absolute inset-x-0 bottom-0 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-line/70 bg-bg/70 px-4 py-2 font-mono text-[11px] text-ink2 backdrop-blur-sm" data-testid="telemetry-bar">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-0.5" aria-label="Legend">
+          {(Object.keys(ROUTE_LABEL) as (keyof typeof ROUTE_LABEL)[]).map((k) => <li key={k} className="flex items-center gap-1.5"><span className="inline-block h-0.5 w-5" style={{ background: ROUTE_COLOR[k] }} />{ROUTE_LABEL[k]}</li>)}
+          <li className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-ink" />Checkpoint (MCC)</li>
+          <li className="flex items-center gap-1.5"><span className="inline-block h-2 w-2 bg-warn" />Planned maneuver</li>
+        </ul>
+        <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-0.5" data-testid="telemetry-values" title={mode === "network" ? NET_DISCLOSURE : "Modeled from locally stored ephemerides (J2000 ecliptic) with Kepler/Lambert propagation. Body sizes and Local-view distances are visually scaled."}>
+          <span className="font-semibold text-accent" data-testid="tm-mission">{m.code} (SELECTED)</span>
+          <span data-testid="tm-status">STATUS {m.vehicle.phaseLabel.toUpperCase()}</span>
+          <span data-testid="tm-met">{atNow ? "MET" : "SIM"} {metOf(day - 1)}</span>
+          <span data-testid="tm-phase">PHASE {(point?.phase ?? "—").toUpperCase()}</span>
+          {tele?.dist ? <span data-testid="tm-dist">{tele.dist.label} {fmtKm(tele.dist.km)}</span> : <span className="text-mute">DIST unavailable</span>}
+          {tele?.speed ? <span data-testid="tm-speed">{tele.speed.label} {tele.speed.kmS.toFixed(2)} km/s</span> : <span className="text-mute">v unavailable</span>}
+          <span className="text-mute">{mode === "network" ? "SCHEMATIC SCALE" : mode === "interplanetary" ? "EPHEMERIS-BASED" : "VISUAL SCALE"} · MODELED · NOT LIVE · FICTIONAL</span>
+        </div>
+      </footer>
 
       {hover && (hm || hover.bodyId) && (
         <div className={`pointer-events-none fixed z-30 max-w-[260px] rounded-sm px-2.5 py-1.5 text-[11px] ${glass}`} style={{ left: (hover.x >= 0 ? hover.x : mouse.x) + 14, top: (hover.y >= 0 ? hover.y : mouse.y) + 14 }} data-testid="tooltip" data-kind={hover.kind}>
