@@ -37,7 +37,7 @@ function CrewData() {
           <div className="flex gap-4">
             <CrewPortrait id={selectedId} size={96} />
             <div className="text-[13px] text-ink2">
-              <p>Fictional crew member. The portrait file is a placeholder until an approved image is supplied (see <code>public/crew/manifest.json</code>).</p>
+              <p>Fictional crew member. The portrait is a synthetic image, not a real person (see <code>public/crew/manifest.json</code>).</p>
             </div>
           </div>
         </Card>
