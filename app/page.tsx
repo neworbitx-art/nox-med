@@ -65,7 +65,7 @@ function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }:
   const ref = useRef<HTMLElement>(null);
   useEffect(() => { const prev = document.activeElement as HTMLElement | null; return () => { if (prev && prev !== document.body && document.contains(prev)) prev.focus({ preventScroll: true }); }; }, []);
   return (
-    <aside ref={ref} className={`${closing ? "panel-out" : "panel-spring"} pointer-events-auto flex max-h-[calc(100dvh-11.5rem)] w-[min(380px,calc(100vw-1.5rem))] flex-col glass-curve max-sm:max-h-[calc(100dvh-27rem)] max-sm:w-full`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
+    <aside ref={ref} className={`${closing ? "panel-out" : "panel-spring"} pointer-events-auto flex max-h-[calc(100dvh-11.5rem)] w-[min(380px,calc(100vw-1.5rem))] flex-col glass-curve relative overflow-hidden max-sm:max-h-[calc(100dvh-27rem)] max-sm:w-full`} aria-label={`${m.code} mission panel`} data-testid="mission-panel" data-mission={m.id}>
       <div className="flex shrink-0 items-start justify-between gap-2 px-[18px] pb-3 pt-4">
         <div><div className="p-lab">{m.code}{active ? " · session mission" : ""}</div><h2 className="mt-0.5 text-[17px] font-semibold text-ink">{m.name}</h2></div>
         <button onClick={onClose} aria-label="Close panel" className="g-btn rounded-full p-1.5"><X size={15} /></button>
@@ -86,7 +86,7 @@ function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }:
             <span className="text-mute">Crew health summary: </span>
             {crew ? <span>{[crew.nominal && `${crew.nominal} nominal`, crew.watch && `${crew.watch} watch`, crew.attention && `${crew.attention} attention`, crew.critical && `${crew.critical} critical`].filter(Boolean).join(" · ")}</span> : <span className="text-ink2">No crew health records for this mission</span>}
           </div>
-          <Link href="/crew" data-testid="crew-overview" className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-accent underline-offset-2 hover:underline">Crew Health Overview <ArrowRight size={11} /></Link>
+          <Link href={`/mission/${m.id}`} onClick={onOpen} data-testid="crew-overview" className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-accent underline-offset-2 hover:underline">Crew Health Overview <ArrowRight size={11} /></Link>
         </div>
         <div className="p-sec" data-testid="ship-health" data-overall={ship.overall}>
           <div className="mb-1.5 flex items-center justify-between"><span className="p-lab">Spacecraft environment</span><Level l={ship.overall} /></div>
