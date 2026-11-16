@@ -49,13 +49,14 @@ export interface HudReading { label: string; unit: string; display: string; frac
 export interface Hud { crew: string; day: number; time: string; readings: HudReading[] }
 
 /** Latest sample of one fictional demo crew member, for the NOX MED terminal. Ring position = where the value sits around its default reference interval. */
+const SHORT = { pH: "pH", pCO2: "pCO₂", Lac: "Lactate" } as const;
 export function hudData(): Hud | null {
   const { labs, crew } = evidence();
   const last = labs[labs.length - 1]; if (!last) return null;
   const readings: HudReading[] = (["pH", "pCO2", "Lac"] as const).flatMap((k) => {
     const v = last.values[k], m = METRICS[k]; if (v === undefined || Number.isNaN(v)) return [];
     const span = m.refHigh - m.refLow, frac = Math.max(0.04, Math.min(1, (v - (m.refLow - span)) / (3 * span)));
-    return [{ label: m.name, unit: m.unit || m.label, display: fmt(k, v), frac }];
+    return [{ label: SHORT[k], unit: m.unit || m.label, display: fmt(k, v), frac }];
   });
   return { crew: crew.id, day: last.missionDay, time: last.collectedAt.slice(11, 16), readings };
 }
