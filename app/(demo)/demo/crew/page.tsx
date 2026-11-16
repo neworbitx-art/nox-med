@@ -119,7 +119,7 @@ function RosterOnly({ m }: { m: MissionRecord }) {
           </Card>
         ))}
       </div>
-      <p className="mt-3 text-[12px] text-mute"><Link href={`/mission/${m.id}`} className="text-accent hover:underline">Open {m.code} overview</Link></p>
+      <p className="mt-3 text-[12px] text-mute"><Link href={`/demo/mission/${m.id}`} className="text-accent hover:underline">Open {m.code} overview</Link></p>
     </div>
   );
 }

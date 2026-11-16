@@ -244,7 +244,7 @@ export default function IntegratedTimeline() {
           <p className="mt-2 text-[11px] text-mute">Cabin CO₂ in mmHg (ambient partial pressure); blood values in {m.unit || "native units"}. Coverage = recorded hours ÷ hours in the window; below {MIN_COVERAGE * 100}% is flagged and excluded from the association. Exercise within 6 h can transiently alter blood lactate and gases. Wearable columns are the daily summary for the sample&apos;s mission day.</p>
         </Card>
       </div>
-      <p className="text-[11px] text-mute">Related: <Link href="/environment" className="text-accent underline">Environmental Monitoring</Link> · <Link href="/wearables" className="text-accent underline">Wearables</Link> · <Link href="/blood-gas" className="text-accent underline">Blood Gas Intelligence</Link>. Crew: {astronauts.map((a) => a.id).join(", ")}.</p>
+      <p className="text-[11px] text-mute">Related: <Link href="/demo/environment" className="text-accent underline">Environmental Monitoring</Link> · <Link href="/demo/wearables" className="text-accent underline">Wearables</Link> · <Link href="/demo/blood-gas" className="text-accent underline">Blood Gas Intelligence</Link>. Crew: {astronauts.map((a) => a.id).join(", ")}.</p>
     </>
   );
 }

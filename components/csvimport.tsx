@@ -54,7 +54,7 @@ export function CsvImport() {
           right={out && !out.fatal && <Btn onClick={doImport} disabled={!valid.length}>Import {valid.length} row{valid.length === 1 ? "" : "s"}</Btn>}>
           {done !== null && (
             <div className="mb-3 flex items-center gap-2 rounded-sm border border-ok/40 bg-ok/10 px-3 py-2 text-sm text-ok">
-              <CheckCircle2 size={16} /> Imported {done} sample{done === 1 ? "" : "s"}. View them in <Link href="/blood-gas" className="underline">Blood Gas Intelligence</Link> or <Link href="/" className="underline">Mission Control</Link>.
+              <CheckCircle2 size={16} /> Imported {done} sample{done === 1 ? "" : "s"}. View them in <Link href="/demo/blood-gas" className="underline">Blood Gas Intelligence</Link> or <Link href="/demo" className="underline">Mission Control</Link>.
             </div>
           )}
           {!out && done === null && <p className="text-sm text-mute">Nothing validated yet.</p>}

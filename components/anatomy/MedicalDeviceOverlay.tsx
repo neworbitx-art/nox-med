@@ -26,7 +26,7 @@ export function MedicalDeviceOverlay({ system, astronautId }: { system: SystemId
       <p className="mt-1 text-[11px] text-mute">Device records are not measurements. Wearable and CGM streams are shown only as wearable data, never as analyzer results.</p>
       <div className="meta mb-1 mt-3">Conditions, surgeries, allergies, medications</div>
       {list(history, "No history recorded. Records are optional and none are assigned by default.")}
-      <Link href="/crew" className="mt-2 inline-block text-[12px] text-accent hover:underline">Manage records →</Link>
+      <Link href="/demo/crew" className="mt-2 inline-block text-[12px] text-accent hover:underline">Manage records →</Link>
     </section>
   );
 }

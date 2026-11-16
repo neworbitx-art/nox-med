@@ -5,6 +5,7 @@ import { ASTRONAUT_IDS, astronauts, baseLabs, baseVitals, environment, mission, 
 import { generateAlerts } from "./alerts";
 import { ACTIVE_MISSION_ID, missionById } from "./missions";
 import { DEMO_RECORDS, type MedicalRecord } from "./crewprofile";
+import { loadAssessment, saveAssessment, type ReviewEntry, type SymptomReport } from "./assessment";
 
 interface Store {
   selectedId: AstronautId;
@@ -30,6 +31,12 @@ interface Store {
   simEvents: Alert[];
   logSimEvent: (a: Alert) => void;
   clearSimEvents: () => void;
+  /** Symptom reports and review documentation: stored separately from lab results, scoped by mission + astronaut */
+  symptoms: SymptomReport[];
+  addSymptom: (s: SymptomReport) => void;
+  removeSymptom: (id: string) => void;
+  reviews: ReviewEntry[];
+  addReview: (r: ReviewEntry) => void;
   alerts: Alert[];
   currentDay: number;
 }
@@ -49,6 +56,8 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const [uploadedLabs, setUploaded] = useState<UploadedLab[]>([]);
   const [medRecords, setMed] = useState<MedicalRecord[]>([]);
   const [simEvents, setSim] = useState<Alert[]>([]);
+  const [symptoms, setSymptoms] = useState<SymptomReport[]>([]);
+  const [reviews, setReviews] = useState<ReviewEntry[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -60,8 +69,10 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     setSim(load<Alert[]>(K.sim, []));
     setUploaded(load<UploadedLab[]>(K.upl, []));
     setMed(load<MedicalRecord[]>(K.med, []));
+    const a = loadAssessment(localStorage); setSymptoms(a.symptoms); setReviews(a.reviews);
     setReady(true);
   }, []);
+  useEffect(() => { if (ready) saveAssessment(localStorage, { symptoms, reviews }); }, [ready, symptoms, reviews]);
   useEffect(() => { if (ready) try { localStorage.setItem(K.sel, JSON.stringify(selectedId)); localStorage.setItem(K.mis, JSON.stringify(missionId)); localStorage.setItem(K.imp, JSON.stringify(importedLabs)); localStorage.setItem(K.sim, JSON.stringify(simEvents)); localStorage.setItem(K.upl, JSON.stringify(uploadedLabs)); localStorage.setItem(K.med, JSON.stringify(medRecords)); } catch {} }, [ready, selectedId, missionId, importedLabs, simEvents, uploadedLabs, medRecords]);
 
   const addImported = useCallback((l: LabResult[]) => setImported((p) => [...p, ...l]), []);
@@ -73,6 +84,9 @@ export function MissionProvider({ children }: { children: ReactNode }) {
   const removeRecord = useCallback((id: string) => setMed((p) => p.filter((x) => x.id !== id)), []);
   const loadDemoRecords = useCallback(() => setMed((p) => [...p.filter((x) => x.origin !== "demo"), ...DEMO_RECORDS.map((r, i) => ({ ...r, id: `DEMO-${i + 1}` }))]), []);
   const clearRecords = useCallback(() => setMed([]), []);
+  const addSymptom = useCallback((x: SymptomReport) => setSymptoms((p) => [...p, x]), []);
+  const removeSymptom = useCallback((id: string) => setSymptoms((p) => p.filter((x) => x.id !== id)), []);
+  const addReview = useCallback((x: ReviewEntry) => setReviews((p) => [...p, x]), []);
   const logSimEvent = useCallback((a: Alert) => setSim((p) => [a, ...p]), []);
   const clearSimEvents = useCallback(() => setSim([]), []);
 
@@ -82,7 +96,7 @@ export function MissionProvider({ children }: { children: ReactNode }) {
     return [...simEvents, ...gen].sort((a, b) => b.missionDay - a.missionDay);
   }, [labs, simEvents, missionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const value: Store = { selectedId, select: setSelected, missionId, selectMission: setMissionId, labs, importedLabs, addImported, clearImported, uploadedLabs, addUploaded, removeUploaded, clearUploaded, medRecords, addRecord, removeRecord, loadDemoRecords, clearRecords, simEvents, logSimEvent, clearSimEvents, alerts, currentDay: mission.currentDay };
+  const value: Store = { selectedId, select: setSelected, missionId, selectMission: setMissionId, labs, importedLabs, addImported, clearImported, uploadedLabs, addUploaded, removeUploaded, clearUploaded, medRecords, addRecord, removeRecord, loadDemoRecords, clearRecords, simEvents, logSimEvent, clearSimEvents, symptoms, addSymptom, removeSymptom, reviews, addReview, alerts, currentDay: mission.currentDay };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

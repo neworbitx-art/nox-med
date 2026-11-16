@@ -18,6 +18,7 @@ import { ATLAS_SYSTEMS } from "@/components/anatomy/BodyAtlas";
 import { GasPanel, VitalsPanel } from "@/components/anatomy/CrewVitalsGas";
 import { vitalsFor } from "@/lib/data";
 import type { Picked } from "@/components/anatomy/CinematicBody";
+import { AssessmentWorkspace } from "@/components/assessment/AssessmentWorkspace";
 import { MedicalDeviceOverlay } from "@/components/anatomy/MedicalDeviceOverlay";
 import { LEVEL_COLOR, StatusDot } from "@/components/navigator/ShipHealth";
 
@@ -28,9 +29,9 @@ const QUALITY: Record<Quality, { label: string; tone: "ok" | "warn" | "neutral" 
   "device-reported": { label: "Device", tone: "calc" }, "ship-sensor": { label: "Ship sensor", tone: "calc" }, "recorded-with-sample": { label: "With sample", tone: "calc" }, unavailable: { label: "Unavailable", tone: "neutral" },
 };
 const DEEP: Record<BoundSystem, { href: string; label: string }[]> = {
-  cardiovascular: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/wearables", label: "Wearables" }],
-  respiratory: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/environment", label: "Environmental Monitoring" }, { href: "/emergency", label: "Emergency Simulator" }],
-  blood: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/lab-import", label: "Laboratory Import" }, { href: "/timeline", label: "Integrated Timeline" }],
+  cardiovascular: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/wearables", label: "Wearables" }],
+  respiratory: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/environment", label: "Environmental Monitoring" }, { href: "/demo/emergency", label: "Emergency Simulator" }],
+  blood: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/lab-import", label: "Laboratory Import" }, { href: "/demo/timeline", label: "Integrated Timeline" }],
 };
 const Trend = ({ t }: { t: "up" | "down" | "flat" | null }) => t === null ? <span className="text-mute" aria-label="Trend not available">—</span> : t === "up" ? <ArrowUpRight size={14} aria-label="Rising" /> : t === "down" ? <ArrowDownRight size={14} aria-label="Falling" /> : <Minus size={14} aria-label="Stable" />;
 const lvl = (l: MissionStatusLevel) => <span className="inline-flex items-center gap-1.5 text-[12px]" data-level={l}><StatusDot level={l} />{LEVEL_LABEL[l]}</span>;
@@ -52,7 +53,7 @@ export default function MissionOverview() {
   useEffect(() => { setLocalCode(null); }, [mid]);
 
   const roster = useMemo(() => (m ? crewOf(m) : []), [m]);
-  if (!m) return <><h1 className="text-xl font-semibold">Mission not found</h1><p className="text-mute">This mission code is not in the mission list.</p><Link href="/" className="text-accent hover:underline">← Back to Mission Navigator</Link></>;
+  if (!m) return <><h1 className="text-xl font-semibold">Mission not found</h1><p className="text-mute">This mission code is not in the mission list.</p><Link href="/demo" className="text-accent hover:underline">← Back to Mission Navigator</Link></>;
 
   const ship = shipHealthFor(m), tr = trajectoryFor(m.id), active = m.hasCrewData && m.id === storeMission;
   const crew = roster.find((c) => (c.astronaut && active ? c.astronaut.id === selectedId : c.code === (localCode ?? roster[0].code))) ?? roster[0];
@@ -74,7 +75,7 @@ export default function MissionOverview() {
 
   return (
     <div data-testid="mission-overview" data-mission={m.id}>
-      <div className="mb-1"><Link href="/" className="inline-flex items-center gap-1 text-[12px] text-accent hover:underline" data-testid="back-to-navigator"><Compass size={12} /> Mission Navigator</Link></div>
+      <div className="mb-1"><Link href="/demo" className="inline-flex items-center gap-1 text-[12px] text-accent hover:underline" data-testid="back-to-navigator"><Compass size={12} /> Mission Navigator</Link></div>
       {/* header */}
       <header className="mb-3 border-b border-line pb-3">
         <div className="meta mono text-accent">{m.code} · Crew Health Overview</div>
@@ -132,10 +133,10 @@ export default function MissionOverview() {
           <div className="p-sec">
             <div className="p-lab mb-1.5">Body system</div>
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="Body system">
-              {OVERVIEW_SYSTEMS.map((sy) => { const on = sy.id === "cardiovascular", fut = !on;
+              {OVERVIEW_SYSTEMS.map((sy) => { const on = ATLAS_SYSTEMS.includes(sy.id as never), fut = !on;
                 return <button key={sy.id} onClick={() => on && setSystem(sy.id)} disabled={fut} aria-pressed={on && system === sy.id} data-system-option={sy.id} className="g-btn !rounded-full px-2.5 py-1 text-[11px] disabled:cursor-not-allowed disabled:opacity-40" data-on={on && system === sy.id}>{sy.label}{fut && <span className="ml-1 text-[8px] tracking-wide text-mute">FUTURE</span>}</button>; })}
             </div>
-            <p className="mt-1.5 text-[10px] text-mute">Only the cardiovascular system is analysed in this version.</p>
+            <p className="mt-1.5 text-[10px] text-mute">Cardiovascular, respiratory and blood (haematology) are analysed in this version.</p>
           </div>
           <div className="p-sec" data-testid="structure-info">
             <div className="p-lab">Selected structure</div>
@@ -145,6 +146,8 @@ export default function MissionOverview() {
           </div>
         </div>
       </section>
+
+      {hasData && aid && <AssessmentWorkspace key={`${m.id}:${aid}`} missionId={m.id} missionCode={m.code} astronautId={aid} crewLabel={`${crew.callsign} (${crew.code})`} role={crew.role} />}
 
       <div className="mt-3 grid gap-3 xl:grid-cols-2">
           <Card title="Spacecraft environment and engineering" subtitle={`${m.code} · ${m.dataSource}`}>
@@ -187,7 +190,7 @@ export default function MissionOverview() {
           {(atlasOn ? DEEP[bound] : DEEP.cardiovascular).map((x) => active
             ? <Link key={x.href} href={x.href} className="rounded-sm border border-line bg-panel px-3 py-1.5 text-[13px] font-medium text-ink2 hover:border-accent/60 hover:text-ink">{x.label}</Link>
             : <span key={x.href} aria-disabled className="cursor-not-allowed rounded-sm border border-line bg-bg2 px-3 py-1.5 text-[13px] text-mute">{x.label}</span>)}
-          <Link href="/" className="rounded-sm border border-accent/50 px-3 py-1.5 text-[13px] text-accent hover:bg-accent/10">Back to Mission Navigator</Link>
+          <Link href="/demo" className="rounded-sm border border-accent/50 px-3 py-1.5 text-[13px] text-accent hover:bg-accent/10">Back to Mission Navigator</Link>
         </div>
       </Card>
     </div>
