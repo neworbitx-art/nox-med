@@ -6,6 +6,7 @@ import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
 import { Backdrop, Stars } from "@/components/marketing/Backdrop";
 import { DriftSchema } from "@/components/marketing/Schemas";
 import { Team } from "@/components/marketing/Team";
+import { BodyShowcase } from "@/components/marketing/BodyShowcase";
 
 export default function Home() {
   return (
@@ -80,23 +81,50 @@ export default function Home() {
 
       <section id="nox-med" className="mk-section mk-med-home">
         <Stars />
-        <div className="mk-wrap mk-split">
-          <Reveal delay={100}>
-            <DriftSchema />
-          </Reveal>
+        <div className="mk-wrap mk-med-intro">
           <Reveal>
             <p className="mk-eyebrow">NOX MED · Innovation</p>
-            <h2 className="mk-h2">Detect the change before it becomes an emergency.</h2>
-            <p className="mk-lead">Most blood tests are read as a snapshot. NOX MED reads them as a story: one quick sample, followed across the whole mission and measured against each astronaut&apos;s own baseline.</p>
-            <ul className="mk-pillars">
-              <li><b>Your own baseline</b><span>The reference is the astronaut, not a population average.</span></li>
-              <li><b>Time, not snapshots</b><span>Every sample is read against the mission so far.</span></li>
-              <li><b>Explained, never a black box</b><span>Each observation shows its reasoning and its uncertainty.</span></li>
-            </ul>
-            <div className="mk-cta-row">
-              <Link href={ROUTES.noxMed} className="mk-link">Discover the innovation <span aria-hidden>→</span></Link>
-              <Link href={ROUTES.demoMed} className="mk-link mk-link-quiet">Open NOX MED <span aria-hidden>→</span></Link>
+            <p className="mk-glad">We are glad to present you</p>
+            <h2 className="mk-med-title">NOX MED</h2>
+            <p className="mk-lead mk-lead-c">One quick blood sample, followed across the whole mission and read against each astronaut&apos;s own baseline. Longitudinal blood gas intelligence for crews who cannot return to hospital.</p>
+          </Reveal>
+        </div>
+        <div className="mk-wrap mk-med-stage">
+          <Reveal className="mk-med-col">
+            <div className="mk-glass">
+              <h3>Innovations</h3>
+              <ul className="mk-dots">
+                <li><b>Blood gas trends</b><span>Every ABL90-class result becomes a mission-long trend, not a snapshot.</span></li>
+                <li><b>Personal baselines</b><span>The reference is the astronaut, not a population average.</span></li>
+                <li><b>Sample-aware</b><span>Venous, arterial and capillary samples are never mixed up.</span></li>
+                <li><b>Explainable rules</b><span>Each finding shows its reasoning and its uncertainty.</span></li>
+                <li><b>Body-system view</b><span>Cardiovascular, respiratory and blood findings on one anatomy.</span></li>
+              </ul>
             </div>
+          </Reveal>
+          <Reveal delay={120} className="mk-med-mid"><BodyShowcase /></Reveal>
+          <Reveal delay={240} className="mk-med-col">
+            <div className="mk-glass">
+              <h3>Benefits</h3>
+              <ul className="mk-dots">
+                <li><b>Earlier signal</b><span>See a drift while every value is still inside the normal range.</span></li>
+                <li><b>Prevention</b><span>Learn from each mission to prepare the next one.</span></li>
+                <li><b>One truth</b><span>Astronaut and medical officer read the same data, in their own language.</span></li>
+                <li><b>Local-first</b><span>Designed to keep working with a limited link to the ground.</span></li>
+                <li><b>Documented review</b><span>Symptoms, acknowledgements and reviews stay on the record.</span></li>
+              </ul>
+            </div>
+          </Reveal>
+        </div>
+        <div className="mk-wrap mk-med-how">
+          <Reveal><DriftSchema /></Reveal>
+          <Reveal delay={120}>
+            <p className="mk-lead" style={{ marginTop: 0 }}>The change is visible long before a conventional alarm. That is the time NOX MED gives back to the crew.</p>
+            <div className="mk-cta-row" style={{ marginTop: 28 }}>
+              <Link href={ROUTES.demoMed} className="mk-btn mk-btn-primary">Open NOX MED</Link>
+              <Link href={ROUTES.noxMed} className="mk-link">Science &amp; data <span aria-hidden>→</span></Link>
+            </div>
+            <p className="mk-fine">Prototype on demonstration data. Decision support for review; not a diagnosis and not clinically validated.</p>
           </Reveal>
         </div>
       </section>
