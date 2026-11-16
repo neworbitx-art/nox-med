@@ -19,6 +19,10 @@ export default function AboutPage() {
           <h1>Prevention is the only medicine at distance.</h1>
         </div>
       </section>
+      <section className="mk-section mk-team-sec" style={{ paddingTop: 40, paddingBottom: 0 }}>
+        <div className="mk-wrap"><Reveal><p className="mk-eyebrow">The team</p><h2 className="mk-h2">The people behind NOX.</h2></Reveal></div>
+        <Team />
+      </section>
       <section className="mk-section" style={{ paddingTop: 40 }}>
         <div className="mk-wrap">
           <Reveal className="mk-prose">
@@ -30,8 +34,6 @@ export default function AboutPage() {
             <Reveal delay={100}><h3>Honest data</h3><p>Every value carries its provenance and quality flag. Spacecraft readings are never presented as clinical values.</p></Reveal>
             <Reveal delay={200}><h3>Built for the crew</h3><p>Clear, calm interfaces for crew, flight surgeons and mission teams, on the ground and in flight.</p></Reveal>
           </div>
-          <Reveal><p className="mk-eyebrow" style={{ marginTop: 72 }}>The team</p></Reveal>
-          <Team />
           <div className="mk-hero-cta" style={{ marginTop: 56 }}>
             <Link href={ROUTES.demo} className="mk-btn mk-btn-primary">Explore the demo</Link>
             <Link href={`${ROUTES.demo}/about`} className="mk-btn mk-btn-ghost">Data sources &amp; methods</Link>

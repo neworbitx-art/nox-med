@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 /** Official NOX wordmark (public/brand/nox-wordmark.png). `size` = rendered height in px. */
 export function Logo({ size = 44 }: { size?: number }) {
-  return <img src="/brand/nox-wordmark.png" alt="NOX — New Orbit Exploration" height={size} width={Math.round(size * (262 / 206))} className="mk-logo-img" style={{ height: size, width: "auto" }} />;
+  const d = Math.round(size * 1.25);
+  return <span className="mk-logo-circle" style={{ width: d, height: d }}><img src="/brand/nox-wordmark.png" alt="NOX — New Orbit Exploration" className="mk-logo-img" style={{ height: Math.round(d * 0.68), width: "auto" }} /></span>;
 }
 
 /** Official NOX embroidered mission patch (public/brand/nox-patch.png). */
