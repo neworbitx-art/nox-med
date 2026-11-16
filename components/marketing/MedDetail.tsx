@@ -19,13 +19,6 @@ const CAPABILITIES: { title: string; text: string; status: Status; href?: string
   { title: "Offline-capable architecture", text: "Analysis runs in the browser from local data. No server call is needed to interpret results, and imported records stay on the device. An installable offline mode is the next step.", status: "Local-first", href: `${D}/lab-import` },
 ];
 
-const FLOW = [
-  { n: "01", k: "Measure", t: "Collect laboratory, wearable and environmental measurements." },
-  { n: "02", k: "Analyze", t: "Compare each result with the astronaut's individual baseline and longitudinal trend." },
-  { n: "03", k: "Understand", t: "Present explainable observations with measurement quality and uncertainty." },
-  { n: "04", k: "Review", t: "Support astronaut self-assessment and crew medical officer review." },
-];
-
 const ANALYTE_GROUPS: { group: string; keys: MetricKey[] }[] = [
   { group: "Acid–base & gases", keys: ["pH", "pCO2", "pO2", "HCO3", "BE"] },
   { group: "Electrolytes", keys: ["Na", "K", "Cl", "iCa"] },
@@ -52,7 +45,7 @@ const REFS = [
 export function MedDetail() {
   const obs = observationExample();
   return (
-    <div className="mk-wrap mk-med">
+    <div className="mk-wrap mk-med mk-med-page">
       <Reveal>
         <h3 className="mk-h3">What NOX MED does</h3>
         <ul className="mk-caps">
@@ -68,18 +61,11 @@ export function MedDetail() {
       </Reveal>
 
       <Reveal>
-        <h3 className="mk-h3">From measurement to review</h3>
-        <ol className="mk-flow">
-          {FLOW.map((s) => <li key={s.k}><span>{s.n}</span><b>{s.k}</b><p>{s.t}</p></li>)}
-        </ol>
-      </Reveal>
-
-      <Reveal>
         <h3 className="mk-h3">Blood gas intelligence</h3>
         <div className="mk-split mk-split-top">
           <div>
             <p className="mk-lead" style={{ marginTop: 0 }}>A single reading is a snapshot against a population range. An astronaut can drift away from their own normal while every value is still inside that range. Comparing each sample with the person&apos;s own history, its sample type and its quality flags shows the shift early, and shows when a value should not be trusted at all.</p>
-            <p className="mk-note-lg">The chart above is one fictional crew member: pCO₂ has risen about six standard deviations from baseline while pH still sits inside its reference interval.</p>
+            <p className="mk-note-lg">Below: a real output of the NOX MED rule engine for one fictional crew member. pCO₂ has risen about six standard deviations from that person's baseline while pH still sits inside its reference interval.</p>
             <div className="mk-analytes" role="group" aria-label="Analytes analyzed">
               {ANALYTE_GROUPS.map((g) => (
                 <div key={g.group}>

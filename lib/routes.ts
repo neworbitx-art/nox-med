@@ -4,6 +4,7 @@ export const ROUTES = {
   home: "/",
   missions: "/missions",
   about: "/about",
+  noxMed: "/nox-med",
   demo: DEMO_BASE,
   demoMed: `${DEMO_BASE}/med`,
 } as const;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/marketing/Reveal";
+import { Backdrop } from "@/components/marketing/Backdrop";
 import { Patch } from "@/components/marketing/Logo";
 import { ROUTES } from "@/lib/routes";
 
@@ -9,7 +10,8 @@ export const metadata: Metadata = { title: "About", description: "NOX — New Or
 export default function AboutPage() {
   return (
     <>
-      <section className="mk-page-hero">
+      <section className="mk-page-hero mk-page-bg">
+        <Backdrop src="/backgrounds/cupola.jpg" variant="a" dim={0.45} position="center" />
         <div className="mk-wrap">
           <p className="mk-eyebrow">About NOX</p>
           <div style={{ marginTop: 22 }}><Patch size={140} /></div>

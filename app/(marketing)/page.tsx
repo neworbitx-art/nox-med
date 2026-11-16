@@ -3,8 +3,8 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { Patch } from "@/components/marketing/Logo";
 import { ROUTES } from "@/lib/routes";
 import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
-import { TrendPanel } from "@/components/marketing/MedEvidence";
-import { MedDetail } from "@/components/marketing/MedDetail";
+import { Backdrop, Stars } from "@/components/marketing/Backdrop";
+import { DriftSchema } from "@/components/marketing/Schemas";
 
 export default function Home() {
   return (
@@ -24,6 +24,7 @@ export default function Home() {
       </section>
 
       <section id="mission-control" className="mk-section">
+        <Backdrop src="/backgrounds/cupola.jpg" variant="a" dim={0.42} />
         <div className="mk-wrap mk-split">
           <Reveal>
             <p className="mk-eyebrow">Interactive Mission Control</p>
@@ -55,6 +56,7 @@ export default function Home() {
       </section>
 
       <section id="missions" className="mk-section alt">
+        <Backdrop src="/backgrounds/mars.jpg" variant="b" dim={0.4} />
         <div className="mk-wrap">
           <Reveal>
             <p className="mk-eyebrow">NOX Missions</p>
@@ -75,28 +77,31 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="nox-med" className="mk-section">
+      <section id="nox-med" className="mk-section mk-med-home">
+        <Stars />
         <div className="mk-wrap mk-split">
           <Reveal delay={100}>
-            <TrendPanel />
+            <DriftSchema />
           </Reveal>
           <Reveal>
-            <p className="mk-eyebrow">NOX MED</p>
+            <p className="mk-eyebrow">NOX MED · Innovation</p>
             <h2 className="mk-h2">Detect the change before it becomes an emergency.</h2>
-            <p className="mk-lead">A blood-gas trend platform for long-duration flight. One quick sample, tracked across the whole mission, turns single readings into early warning.</p>
-            <ul className="mk-features">
-              <li><span>01</span>Blood gas and chemistry trends, per astronaut, across mission time</li>
-              <li><span>02</span>Crew health overview on an interactive anatomy model</li>
-              <li><span>03</span>Spacecraft environment kept separate from clinical values</li>
-              <li><span>04</span>Emergency simulator and laboratory import</li>
+            <p className="mk-lead">Most blood tests are read as a snapshot. NOX MED reads them as a story: one quick sample, followed across the whole mission and measured against each astronaut&apos;s own baseline.</p>
+            <ul className="mk-pillars">
+              <li><b>Your own baseline</b><span>The reference is the astronaut, not a population average.</span></li>
+              <li><b>Time, not snapshots</b><span>Every sample is read against the mission so far.</span></li>
+              <li><b>Explained, never a black box</b><span>Each observation shows its reasoning and its uncertainty.</span></li>
             </ul>
-            <Link href={ROUTES.demoMed} className="mk-link">Open NOX MED <span aria-hidden>→</span></Link>
+            <div className="mk-cta-row">
+              <Link href={ROUTES.noxMed} className="mk-link">Discover the innovation <span aria-hidden>→</span></Link>
+              <Link href={ROUTES.demoMed} className="mk-link mk-link-quiet">Open NOX MED <span aria-hidden>→</span></Link>
+            </div>
           </Reveal>
         </div>
-        <MedDetail />
       </section>
 
       <section className="mk-section alt">
+        <Backdrop src="/backgrounds/earthrise.jpg" variant="c" dim={0.5} position="65% 45%" />
         <div className="mk-wrap mk-split">
           <Reveal>
             <p className="mk-eyebrow">About NOX</p>
@@ -113,6 +118,7 @@ export default function Home() {
       </section>
 
       <section className="mk-section mk-invite" aria-label="Explore the demo">
+        <Backdrop src="/backgrounds/launch.jpg" variant="b" dim={0.5} position="50% 40%" />
         <div className="mk-wrap">
           <Reveal>
             <div className="mk-center"><Patch size={150} /></div>

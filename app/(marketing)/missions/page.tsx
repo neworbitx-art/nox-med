@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/marketing/Reveal";
+import { Backdrop } from "@/components/marketing/Backdrop";
 import { ROUTES } from "@/lib/routes";
 import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
 
@@ -9,7 +10,8 @@ export const metadata: Metadata = { title: "Missions", description: "The NOX mis
 export default function MissionsPage() {
   return (
     <>
-      <section className="mk-page-hero">
+      <section className="mk-page-hero mk-page-bg">
+        <Backdrop src="/backgrounds/mars.jpg" variant="b" dim={0.45} position="center" />
         <div className="mk-wrap">
           <p className="mk-eyebrow">NOX Missions</p>
           <h1>Four missions. One horizon.</h1>

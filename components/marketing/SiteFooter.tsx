@@ -14,7 +14,7 @@ export function SiteFooter() {
           <Link href={ROUTES.demoMed}>NOX MED</Link>
         </nav>
       </div>
-      <div className="mk-wrap mk-footer-base">© {new Date().getFullYear()} NOX — New Orbit Exploration · www.neworbitx.com</div>
+      <div className="mk-wrap mk-footer-base"><span>© {new Date().getFullYear()} NOX — New Orbit Exploration · www.neworbitx.com</span><Link href={ROUTES.noxMed} className="mk-footer-cta">NOX MED · Science &amp; data <span aria-hidden>→</span></Link></div>
     </footer>
   );
 }
