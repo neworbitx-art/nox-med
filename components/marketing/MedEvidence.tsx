@@ -4,6 +4,7 @@
  */
 import { DATASETS, labsFor, setActiveDataset } from "@/lib/data";
 import { analyzeLabs, type Observation } from "@/lib/clinical";
+import { METRICS, fmt } from "@/lib/metrics";
 
 const CREW_ID = "A-03";
 
@@ -42,4 +43,19 @@ export function ObservationCard({ o }: { o: Observation }) {
       <p className="mk-obs-unc"><b>Uncertainty</b>{o.uncertainty}</p>
     </article>
   );
+}
+
+export interface HudReading { label: string; unit: string; display: string; frac: number }
+export interface Hud { crew: string; day: number; time: string; readings: HudReading[] }
+
+/** Latest sample of one fictional demo crew member, for the NOX MED terminal. Ring position = where the value sits around its default reference interval. */
+export function hudData(): Hud | null {
+  const { labs, crew } = evidence();
+  const last = labs[labs.length - 1]; if (!last) return null;
+  const readings: HudReading[] = (["pH", "pCO2", "Lac"] as const).flatMap((k) => {
+    const v = last.values[k], m = METRICS[k]; if (v === undefined || Number.isNaN(v)) return [];
+    const span = m.refHigh - m.refLow, frac = Math.max(0.04, Math.min(1, (v - (m.refLow - span)) / (3 * span)));
+    return [{ label: m.name, unit: m.unit || m.label, display: fmt(k, v), frac }];
+  });
+  return { crew: crew.id, day: last.missionDay, time: last.collectedAt.slice(11, 16), readings };
 }

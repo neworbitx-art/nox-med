@@ -5,6 +5,7 @@ import { ROUTES } from "@/lib/routes";
 import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
 import { Backdrop } from "@/components/marketing/Backdrop";
 import { BodyShowcase } from "@/components/marketing/BodyShowcase";
+import { hudData } from "@/components/marketing/MedEvidence";
 
 export default function Home() {
   return (
@@ -78,7 +79,7 @@ export default function Home() {
       </section>
 
       <section id="nox-med" className="mk-section mk-med-home">
-        <Backdrop src="/backgrounds/control.jpg" variant="c" dim={0.34} position="50% 40%" />
+        <Backdrop src="/backgrounds/astronauts.jpg" variant="c" dim={0.4} position="50% 55%" />
         <div className="mk-wrap mk-med-intro">
           <Reveal>
             <p className="mk-glad">We are glad to present you</p>
@@ -87,23 +88,25 @@ export default function Home() {
           </Reveal>
         </div>
         <div className="mk-wrap mk-med-stage">
-          <Reveal className="mk-med-col">
-            <h3 className="mk-col-h">Innovations</h3>
-            <ul className="mk-dots">
-              <li><b>Blood gas trends</b><span>A mission-long trend, not a snapshot.</span></li>
-              <li><b>Personal baselines</b><span>The astronaut is the reference.</span></li>
-              <li><b>Explainable rules</b><span>Every finding shows its reasoning.</span></li>
-            </ul>
-          </Reveal>
-          <Reveal delay={120} className="mk-med-mid"><BodyShowcase /></Reveal>
-          <Reveal delay={240} className="mk-med-col">
-            <h3 className="mk-col-h">Benefits</h3>
-            <ul className="mk-dots">
-              <li><b>Earlier signal</b><span>See a drift while values still look normal.</span></li>
-              <li><b>Prevention</b><span>Each mission prepares the next.</span></li>
-              <li><b>One truth</b><span>Crew and medical officer, same data.</span></li>
-            </ul>
-          </Reveal>
+          <Reveal><BodyShowcase hud={hudData()} /></Reveal>
+          <div className="mk-med-cols">
+            <Reveal className="mk-med-col">
+              <h3 className="mk-col-h">Innovations</h3>
+              <ul className="mk-dots">
+                <li><b>Blood gas trends</b><span>A mission-long trend, not a snapshot.</span></li>
+                <li><b>Personal baselines</b><span>The astronaut is the reference.</span></li>
+                <li><b>Explainable rules</b><span>Every finding shows its reasoning.</span></li>
+              </ul>
+            </Reveal>
+            <Reveal delay={120} className="mk-med-col">
+              <h3 className="mk-col-h">Benefits</h3>
+              <ul className="mk-dots">
+                <li><b>Earlier signal</b><span>See a drift while values still look normal.</span></li>
+                <li><b>Prevention</b><span>Each mission prepares the next.</span></li>
+                <li><b>One truth</b><span>Crew and medical officer, same data.</span></li>
+              </ul>
+            </Reveal>
+          </div>
         </div>
         <div className="mk-wrap mk-med-end">
           <div className="mk-cta-row">

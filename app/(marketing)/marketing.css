@@ -192,16 +192,27 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 .mk-med-intro { text-align:center; }
 .mk-glad { font-size:clamp(12px,1.3vw,15px); letter-spacing:.34em; text-transform:uppercase; color:var(--mute); }
 .mk-med-title { font-size:clamp(56px,11vw,150px); line-height:.95; font-weight:800; letter-spacing:-.03em; margin-top:10px; color:#fff; }
-.mk-lead-c { margin-inline:auto; text-align:center; }
-.mk-med-stage { display:grid; grid-template-columns:1fr minmax(300px,420px) 1fr; gap:clamp(24px,4vw,64px); align-items:center; margin-top:clamp(36px,5vw,64px); }
-@media (max-width:1000px) { .mk-med-stage { grid-template-columns:1fr; } .mk-med-mid { order:-1; } }
+.mk .mk-lead-c { margin-inline:auto; text-align:center; max-width:58ch; }
+.mk-med-stage { margin-top:clamp(36px,5vw,64px); }
+.mk-med-cols { display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,6vw,96px); width:min(1000px,100%); margin:clamp(40px,5vw,64px) auto 0; } @media (max-width:760px) { .mk-med-cols { grid-template-columns:1fr; } }
+/* terminal HUD */
+.mk-hud { position:relative; width:min(1000px,100%); margin-inline:auto; aspect-ratio:16/10; border-radius:30px; overflow:hidden; border:1px solid var(--line); background:#020408; box-shadow:0 30px 90px rgba(0,0,0,.6); }
+@media (max-width:760px) { .mk-hud { aspect-ratio:4/5; } }
+.mk-hud-canvas { position:absolute; inset:0; } .mk-hud-canvas canvas { display:block; }
+.mk-hud > * { pointer-events:none; } .mk-hud-canvas { pointer-events:auto; }
+.mk-hud-line { position:absolute; top:7%; bottom:7%; width:1px; background:rgba(255,255,255,.4); } .mk-hud-line.l { left:5%; } .mk-hud-line.r { right:5%; }
+.mk-hud-tl { position:absolute; left:8%; top:9%; display:grid; gap:6px; } .mk-hud-tl span { font-size:clamp(10px,1.3vw,15px); letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.75); }
+.mk-hud-tl b { background:rgba(255,255,255,.92); color:#555; font-size:clamp(14px,2.2vw,26px); font-weight:700; letter-spacing:.06em; padding:2px 12px; justify-self:start; }
+.mk-hud-reads { position:absolute; left:8%; top:30%; list-style:none; margin:0; padding:0; display:grid; gap:clamp(10px,2.4vw,26px); }
+.mk-hud-reads li { display:flex; align-items:center; gap:14px; } .mk-hud-reads li div { display:grid; } .mk-hud-reads span { font-size:clamp(9px,1.1vw,12px); letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.7); } .mk-hud-reads b { font-size:clamp(18px,3vw,34px); font-weight:300; line-height:1.05; }
+.mk-hud-reads svg { width:clamp(38px,5vw,52px); height:auto; }
+.mk-hud-tr { position:absolute; right:8%; top:9%; display:grid; gap:4px; text-align:right; } .mk-hud-tr span { font-size:clamp(9px,1.1vw,12px); letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.6); } .mk-hud-tr em { font-style:normal; color:#fff; margin-left:8px; }
+.mk-hud-bl { position:absolute; left:8%; bottom:9%; display:flex; flex-wrap:wrap; align-items:baseline; gap:0 12px; } .mk-hud-bl b { font-size:clamp(20px,3.6vw,40px); font-weight:800; letter-spacing:.04em; } .mk-hud-bl span { font-size:clamp(18px,3.4vw,38px); font-weight:200; letter-spacing:.1em; color:rgba(255,255,255,.8); } .mk-hud-bl small { flex-basis:100%; margin-top:6px; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+@media (max-width:760px) { .mk-hud-tr { display:none; } .mk-hud-reads { top:24%; } }
 .mk-col-h { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--cyan); margin-bottom:14px; font-weight:600; }
 .mk-dots { list-style:none; margin:0; padding:0; } .mk-dots li { padding:16px 0; border-top:1px solid var(--line); display:grid; gap:4px; }
 .mk-dots b { font-size:15px; letter-spacing:.08em; text-transform:uppercase; font-weight:600; } .mk-dots span { color:var(--mute); font-size:14px; }
-.mk-body-canvas { position:relative; aspect-ratio:3/4.2; border-radius:36px; overflow:hidden; border:1px solid var(--line); background:#020408; }
-.mk-body-canvas canvas { display:block; }
 .mk-body-load { position:absolute; inset:0; display:grid; place-items:center; color:var(--mute); font-size:12px; letter-spacing:.2em; text-transform:uppercase; }
-.mk-body-tag { text-align:center; margin-top:12px; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--mute); min-height:18px; }
 .mk-med-end { text-align:center; margin-top:clamp(40px,6vw,72px); } .mk-med-end .mk-cta-row { justify-content:center; align-items:center; }
 .mk-fine { margin-top:20px; font-size:12px; color:var(--mute); }
 
