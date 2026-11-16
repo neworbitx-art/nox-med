@@ -79,7 +79,7 @@ export default function Home() {
       </section>
 
       <section id="nox-med" className="mk-section mk-med-home">
-        <Backdrop src="/backgrounds/mars-craters.jpg" variant="c" dim={0.6} position="50% 60%" />
+        <Backdrop src="/backgrounds/medical-monitor.jpg" variant="c" dim={0.5} position="50% 45%" />
         <div className="mk-wrap mk-med-intro">
           <Reveal>
             <p className="mk-glad">We are glad to present you</p>

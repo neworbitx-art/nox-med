@@ -155,7 +155,7 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 .mk-page-hero h1, .mk-hero-cta { position:relative; }
 
 /* ── NOX MED innovation (home) ── */
-.mk-med-home { background:#000; isolation:isolate; }
+.mk-med-home { background:#000; isolation:isolate; padding:clamp(56px,7vw,96px) 0; }
 .mk-pillars { list-style:none; margin:34px 0 0; padding:0; display:grid; gap:0; } .mk-pillars li { padding:16px 0 16px 20px; border-left:2px solid var(--cyan); margin-bottom:14px; display:grid; gap:2px; } .mk-pillars b { font-size:15px; letter-spacing:.14em; text-transform:uppercase; } .mk-pillars span { color:var(--mute); font-size:14px; }
 .mk-cta-row { display:flex; flex-wrap:wrap; gap:8px 32px; } .mk-link-quiet { color:var(--mute); }
 .mk-footer-base { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
@@ -188,12 +188,12 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 @keyframes mk-scene-in { from { opacity:0; } to { opacity:1; } }
 
 /* ── NOX MED (minimal) ── */
-.mk-med-home { background:#000; isolation:isolate; }
+.mk-med-home { background:#000; isolation:isolate; padding:clamp(56px,7vw,96px) 0; }
 .mk-med-intro { text-align:center; }
 .mk-glad { font-size:clamp(12px,1.3vw,15px); letter-spacing:.34em; text-transform:uppercase; color:var(--mute); }
-.mk-med-title { font-size:clamp(56px,11vw,150px); line-height:.95; font-weight:800; letter-spacing:-.03em; margin-top:10px; color:#fff; }
+.mk-med-title { font-size:clamp(44px,8vw,108px); line-height:.95; font-weight:800; letter-spacing:-.03em; margin-top:10px; color:#fff; }
 .mk .mk-lead-c { margin-inline:auto; text-align:center; max-width:58ch; }
-.mk-med-stage { margin-top:clamp(36px,5vw,64px); display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:clamp(28px,5vw,72px); align-items:center; } @media (max-width:980px) { .mk-med-stage { grid-template-columns:1fr; } }
+.mk-med-stage { width:min(1040px,calc(100% - 48px)); margin-top:clamp(24px,3.5vw,44px); display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:clamp(28px,5vw,72px); align-items:center; } @media (max-width:980px) { .mk-med-stage { grid-template-columns:1fr; } }
 .mk-med-side { display:grid; gap:clamp(24px,3vw,40px); }
 /* terminal HUD */
 .mk-hud { position:relative; width:100%; aspect-ratio:5/4; border-radius:30px; overflow:hidden; border:1px solid rgba(255,255,255,.2); background:rgba(2,4,8,.42); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 30px 90px rgba(0,0,0,.45); }
@@ -210,10 +210,10 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 .mk-hud-bl { position:absolute; left:8%; bottom:9%; display:flex; flex-wrap:wrap; align-items:baseline; gap:0 12px; } .mk-hud-bl b { font-size:clamp(20px,3.6vw,40px); font-weight:800; letter-spacing:.04em; } .mk-hud-bl span { font-size:clamp(18px,3.4vw,38px); font-weight:200; letter-spacing:.1em; color:rgba(255,255,255,.8); } .mk-hud-bl small { flex-basis:100%; margin-top:6px; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.6); }
 @media (max-width:760px) { .mk-hud-tr { display:none; } .mk-hud-reads { top:24%; } }
 .mk-col-h { font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--cyan); margin-bottom:14px; font-weight:600; }
-.mk-dots { list-style:none; margin:0; padding:0; } .mk-dots li { padding:16px 0; border-top:1px solid var(--line); display:grid; gap:4px; }
+.mk-dots { list-style:none; margin:0; padding:0; } .mk-dots li { padding:12px 0; border-top:1px solid var(--line); display:grid; gap:4px; }
 .mk-dots b { font-size:15px; letter-spacing:.08em; text-transform:uppercase; font-weight:600; } .mk-dots span { color:var(--mute); font-size:14px; }
 .mk-body-load { position:absolute; inset:0; display:grid; place-items:center; color:var(--mute); font-size:12px; letter-spacing:.2em; text-transform:uppercase; }
-.mk-med-end { text-align:center; margin-top:clamp(40px,6vw,72px); } .mk-med-end .mk-cta-row { justify-content:center; align-items:center; }
+.mk-med-end { text-align:center; margin-top:clamp(28px,4vw,48px); } .mk-med-end .mk-cta-row { justify-content:center; align-items:center; }
 .mk-fine { margin-top:20px; font-size:12px; color:var(--mute); }
 
 /* logo in a circle */
