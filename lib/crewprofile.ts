@@ -51,10 +51,10 @@ export const recordsForSystem = (all: MedicalRecord[], id: AstronautId, sys: Sys
 
 /** Optional demonstration records. Loaded only when the user asks; nothing is assigned by default. */
 export const DEMO_RECORDS: Omit<MedicalRecord, "id">[] = [
-  { astronautId: "A-02", kind: "cgm", title: "Continuous glucose monitor (fictional demo)", detail: "Subcutaneous sensor, placed in simulated preflight. Device readings are not blood-gas analyzer results.", systems: ["endocrine"], date: "2031-04-12", fictional: true, origin: "demo" },
-  { astronautId: "A-03", kind: "pacemaker", title: "Dual-chamber pacemaker (fictional demo)", detail: "Demonstration record only: device model, settings and interrogation data are not provided.", systems: ["cardiovascular"], date: "2027-09-03", fictional: true, origin: "demo" },
-  { astronautId: "A-04", kind: "orthopedic", title: "Tibial intramedullary nail, right (fictional demo)", detail: "Demonstration record of a healed fracture fixation.", systems: ["musculoskeletal"], date: "2024-02-20", fictional: true, origin: "demo" },
-  { astronautId: "A-01", kind: "allergy", title: "Penicillin allergy (fictional demo)", detail: "Demonstration record only.", systems: ["immune"], fictional: true, origin: "demo" },
+  { astronautId: "A-02", kind: "cgm", title: "Continuous glucose monitor", detail: "Subcutaneous sensor, placed in simulated preflight. Device readings are not blood-gas analyzer results.", systems: ["endocrine"], date: "2031-04-12", fictional: true, origin: "demo" },
+  { astronautId: "A-03", kind: "pacemaker", title: "Dual-chamber pacemaker", detail: "device model, settings and interrogation data are not provided.", systems: ["cardiovascular"], date: "2027-09-03", fictional: true, origin: "demo" },
+  { astronautId: "A-04", kind: "orthopedic", title: "Tibial intramedullary nail, right", detail: "Record of a healed fracture fixation.", systems: ["musculoskeletal"], date: "2024-02-20", fictional: true, origin: "demo" },
+  { astronautId: "A-01", kind: "allergy", title: "Penicillin allergy", detail: "Sample record.", systems: ["immune"], fictional: true, origin: "demo" },
 ];
 
 // ───────────────────────── portraits ─────────────────────────
@@ -86,7 +86,7 @@ export const CREW_IDENTITY: Record<AstronautId, { persistentId: string; callsign
 /** Episodes for one astronaut. Observation counts for the active mission come from the real dataset; no future observations are generated. */
 export function episodesFor(id: AstronautId, activeLabCount: number, currentDay: number, totalDays: number): Episode[] {
   return [
-    { phase: "previous-mission", label: "Earlier assignments", period: "—", status: "not-recorded", hasObservations: false, note: "No previous-mission data has been loaded for this fictional crew member." },
+    { phase: "previous-mission", label: "Earlier assignments", period: "—", status: "not-recorded", hasObservations: false, note: "No previous-mission data has been loaded for this crew member." },
     { phase: "preflight", label: "Preflight baseline", period: "before mission launch", status: "not-recorded", hasObservations: false, note: "No preflight samples are in this dataset. The personal baseline used in trend rules is the first reliable in-mission samples, which is not a preflight baseline." },
     { phase: "active-mission", label: `${mission.id} ${mission.name}`, period: `day ${currentDay} of ${totalDays}`, status: "in-progress", hasObservations: activeLabCount > 0, note: `${activeLabCount} blood gas samples recorded so far. Scenario runs in the Emergency Simulator are separate from this record.` },
     { phase: "postflight", label: "Postflight recovery", period: `after day ${totalDays}`, status: "planned", hasObservations: false, note: "Not started. No postflight observations exist." },

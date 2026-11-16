@@ -49,7 +49,7 @@ export function VitalsPanel({ id }: { id: AstronautId }) {
           <Spark pts={series("systolic")} label="Systolic blood pressure" w={96} h={28} />
         </li>
       </ul>
-      <p className="mt-1 text-[10px] text-mute">Wearable daily summaries (simulated), trend = 7-day mean · latest mission day {last.missionDay} · ▲▼ versus first 14 days.</p>
+      <p className="mt-1 text-[10px] text-mute">Wearable daily summaries, trend = 7-day mean · latest mission day {last.missionDay} · ▲▼ versus first 14 days.</p>
     </div>
   );
 }

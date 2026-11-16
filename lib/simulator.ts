@@ -196,7 +196,7 @@ export function buildScenario(id: ScenarioId, astronautId: AstronautId = "A-01")
       cabinLevel = item.level; cabinFirstT ??= item.t;
       push({ t: item.t, severity: item.level === 2 ? "warning" : "watch", category: "environment", metric: undefined,
         title: `Cabin CO₂ ${item.v.toFixed(2)} mmHg, above ${item.level === 2 ? co2Warn : co2Watch} mmHg`,
-        detail: "Ambient cabin gas partial pressure (not blood pCO₂). Thresholds are prototype values.",
+        detail: "Ambient cabin gas partial pressure (not blood pCO₂). Thresholds are configurable.",
         why: [`Cabin CO₂ partial pressure crossed the ${item.level === 2 ? "warning" : "watch"} threshold of ${item.level === 2 ? co2Warn : co2Watch} mmHg.`, "Rule: environment threshold on hourly-equivalent telemetry."],
         uncertainty: "An elevated cabin value indicates an environmental issue to check; it does not by itself say anything about any crew member's blood gases." });
       continue;

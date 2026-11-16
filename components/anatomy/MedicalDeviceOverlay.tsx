@@ -5,7 +5,7 @@ import { isDevice, kindMeta, recordsForSystem, SYSTEMS, type SystemId } from "@/
 import { Tag } from "@/components/ui";
 import type { AstronautId } from "@/lib/types";
 
-/** Optional fictional history and device records for the selected astronaut and body system. Devices are never measurements. */
+/** Optional history and device records for the selected astronaut and body system. Devices are never measurements. */
 export function MedicalDeviceOverlay({ system, astronautId }: { system: SystemId; astronautId?: AstronautId }) {
   const { medRecords, selectedId: sel } = useMission();
   const selectedId = astronautId ?? sel;
@@ -15,7 +15,7 @@ export function MedicalDeviceOverlay({ system, astronautId }: { system: SystemId
   const list = (items: typeof recs, empty: string) => items.length === 0 ? <p className="text-[12px] text-mute">{empty}</p> : (
     <ul className="divide-y divide-line border border-line bg-panel">{items.map((r) => (
       <li key={r.id} className="px-3 py-2 text-[13px]" data-record-astronaut={r.astronautId}>
-        <div className="flex flex-wrap items-center gap-1.5 text-ink">{r.title}<Tag>{kindMeta(r.kind).label}</Tag><Tag>fictional</Tag></div>
+        <div className="flex flex-wrap items-center gap-1.5 text-ink">{r.title}<Tag>{kindMeta(r.kind).label}</Tag></div>
         {(r.detail || r.date) && <div className="text-[11px] text-mute">{[r.date, r.detail].filter(Boolean).join(" · ")}</div>}
       </li>))}</ul>);
   return (

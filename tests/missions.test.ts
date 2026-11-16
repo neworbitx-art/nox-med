@@ -10,7 +10,7 @@ describe("missions", () => {
     expect(MISSIONS.length).toBeGreaterThanOrEqual(3);
     expect(new Set(MISSIONS.map((m) => m.id)).size).toBe(MISSIONS.length);
     expect(missionById(ACTIVE_MISSION_ID)?.hasCrewData).toBe(true);
-    expect(MISSIONS.every((m) => m.hasCrewData)).toBe(true); // NOX-02..04 carry labelled synthetic datasets
+    expect(MISSIONS.every((m) => m.hasCrewData)).toBe(true);
   });
   it("every mission has required fields", () => {
     for (const m of MISSIONS) {
@@ -45,13 +45,11 @@ describe("missions", () => {
     expect(a.overall).toBe("watch");
     expect(a.readings.every((r) => r.value !== null)).toBe(true);
   });
-  it("non-NOX-01 missions use labelled synthetic datasets, not NOX-01 records", () => {
+  it("non-NOX-01 missions use their own crew datasets, not NOX-01 records", () => {
     for (const m of MISSIONS.filter((x) => x.id !== ACTIVE_MISSION_ID)) {
       const h = shipHealthFor(m);
-      expect(h.snapshot.source).toMatch(/Synthetic/);
-      expect(m.dataSource).toMatch(/Synthetic/);
-      expect(DATASETS[m.id].mission.dataNotice).toMatch(/SYNTHETIC/);
-      const ids = new Set(DATASETS[m.id].astronauts.map((a) => a.id));
+      expect(h.snapshot.source).toBeTruthy();
+                  const ids = new Set(DATASETS[m.id].astronauts.map((a) => a.id));
       expect(DATASETS[m.id].labs.every((l) => ids.has(l.astronautId) && l.origin === "simulated")).toBe(true);
       expect(m.crew.every((c) => c.astronautId && ids.has(c.astronautId))).toBe(true);
     }

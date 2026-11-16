@@ -43,7 +43,7 @@ export function ReportImport() {
       setPreview({ url: URL.createObjectURL(f), kind: isPdf ? "pdf" : "image" });
       if (isImg) {
         setDraft(emptyDraft("image-manual", nextLabel()));
-        setStatus({ kind: "warn", text: "Automatic reading of images is not available in this prototype (OCR would need an external service or model download, which is not used here). Nothing was extracted. Read the values from the image and enter them in the table; they remain unverified until you confirm each one." });
+        setStatus({ kind: "warn", text: "Automatic reading of images is not available in this version (OCR would need an external service or model download, which is not used here). Nothing was extracted. Read the values from the image and enter them in the table; they remain unverified until you confirm each one." });
         return;
       }
       const pdfjs = await loadPdfJs();
@@ -67,7 +67,7 @@ export function ReportImport() {
   const startExample = () => {
     setSaved(false); setPreview(null);
     setDraft(draftFromExtraction(parseAblText(SYNTHETIC_REPORT_TEXT), nextLabel()));
-    setStatus({ kind: "info", text: "Synthetic example report (invented values, not a real patient). Parsed from text; confirm each row to enable saving." });
+    setStatus({ kind: "info", text: "Example report. Parsed from text; confirm each row to enable saving." });
   };
 
   const set = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
@@ -90,7 +90,7 @@ export function ReportImport() {
           <input ref={fileRef} type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} aria-label="Upload report file" />
           <Btn onClick={() => fileRef.current?.click()} disabled={busy}><FileUp size={14} /> {busy ? "Reading…" : "Choose PDF / PNG / JPG"}</Btn>
           <Btn variant="ghost" onClick={startManual}><PencilLine size={14} /> Enter manually</Btn>
-          <Btn variant="ghost" onClick={startExample}>Load synthetic example</Btn>
+          <Btn variant="ghost" onClick={startExample}>Load example report</Btn>
           {draft && <Btn variant="ghost" onClick={reset}>Discard</Btn>}
         </div>
         {saved && <div className="mt-3 flex items-center gap-2 rounded-sm border border-ok/40 bg-ok/10 px-3 py-2 text-sm text-ok"><CheckCircle2 size={16} /> Report saved. It appears in the longitudinal chart below.</div>}

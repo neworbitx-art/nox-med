@@ -256,7 +256,7 @@ export default function MissionNavigatorPage() {
               <span aria-hidden className="num pointer-events-none absolute -top-7 -translate-x-1/2 whitespace-nowrap rounded-full border border-accent/40 bg-black/80 px-2 py-0.5 font-mono text-[10px] text-ink transition-opacity duration-150" style={{ left: `clamp(40px, ${pct}%, calc(100% - 40px))`, opacity: scrubbing ? 1 : 0 }} data-testid="scrub-tip">{metOf(day - 1)}</span></>); })()}
           </div>
           <span className="num font-mono text-[12px] font-semibold text-ink" data-testid="sim-t">{metOf(day - 1)}</span>
-          <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model; the mission is fictional.">{live ? "● LIVE" : "REPLAY · PAST"}</span>
+          <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model.">{live ? "● LIVE" : "REPLAY · PAST"}</span>
         </div>
         <div className="sr-only" data-testid="sim-readout"><span>{dateOfDay(m, day)}</span><span data-testid="sim-phase">{point?.phase ?? "—"}</span></div>
       </div>
@@ -293,7 +293,7 @@ export default function MissionNavigatorPage() {
           <span data-testid="tm-phase">PHASE {(point?.phase ?? "—").toUpperCase()}</span>
           {tele?.dist ? <span data-testid="tm-dist">{tele.dist.label} {fmtKm(tele.dist.km)}</span> : <span className="text-mute">DIST unavailable</span>}
           {tele?.speed ? <span data-testid="tm-speed">{tele.speed.label} {tele.speed.kmS.toFixed(2)} km/s</span> : <span className="text-mute">v unavailable</span>}
-          <span className="text-mute">{mode === "network" ? "SCHEMATIC SCALE" : mode === "interplanetary" ? "EPHEMERIS-BASED" : "VISUAL SCALE"} · MODEL-DERIVED POSITIONS · FICTIONAL MISSION</span>
+          <span className="text-mute">{mode === "network" ? "SCHEMATIC SCALE" : mode === "interplanetary" ? "EPHEMERIS-BASED" : "VISUAL SCALE"} · MODEL-DERIVED POSITIONS</span>
         </div>
       </footer>
 
