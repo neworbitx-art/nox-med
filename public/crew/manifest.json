@@ -5,77 +5,77 @@
    "id": "A-01",
    "file": "/crew/astronaut-a01.png",
    "alt": "Portrait of fictional crew member A-01, Commander",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Man, 46 y; Commander (NOX-01). man in his mid-40s, short grey-brown hair, light stubble, calm steady gaze, fair skin with faint laugh lines. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "A-02",
    "file": "/crew/astronaut-a02.png",
    "alt": "Portrait of fictional crew member A-02, Flight Engineer",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 39 y; Flight Engineer (NOX-01). woman in her late 30s, dark brown hair tied back in a low bun, olive skin, attentive expression, subtle freckles. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "A-03",
    "file": "/crew/astronaut-a03.png",
    "alt": "Portrait of fictional crew member A-03, Science Specialist",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 42 y; Science Specialist (NOX-01). woman in her early 40s, shoulder-length black hair tucked behind one ear, warm brown skin, thoughtful half-smile, thin-framed glasses. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "A-04",
    "file": "/crew/astronaut-a04.png",
    "alt": "Portrait of fictional crew member A-04, Medical Officer",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Man, 44 y; Medical Officer (NOX-01). man in his mid-40s, short black hair with a little grey at the temples, East Asian features, composed and kind expression, clean-shaven. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "L-01",
    "file": "/crew/astronaut-l01.png",
    "alt": "Portrait of fictional crew member L-01, Commander",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Man, 48 y; Commander (NOX-02). man in his late 40s, cropped silver hair, strong jaw, deep brown skin, confident calm expression, light stubble. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "L-02",
    "file": "/crew/astronaut-l02.png",
    "alt": "Portrait of fictional crew member L-02, Pilot",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 41 y; Pilot (NOX-02). woman in her early 40s, short wavy auburn hair, light skin with freckles, alert direct gaze, slight smile. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "L-03",
    "file": "/crew/astronaut-l03.png",
    "alt": "Portrait of fictional crew member L-03, Mission specialist",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 37 y; Mission specialist (NOX-02). woman in her late 30s, long dark hair in a high ponytail, South Asian features, bright relaxed expression. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "E-01",
    "file": "/crew/astronaut-e01.png",
    "alt": "Portrait of fictional crew member E-01, Station commander",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Man, 50 y; Station commander (NOX-03). man around 50, short white-grey hair and trimmed beard, tan skin, weathered friendly face, steady expression. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "E-02",
    "file": "/crew/astronaut-e02.png",
    "alt": "Portrait of fictional crew member E-02, Flight engineer",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 36 y; Flight engineer (NOX-03). woman in her mid-30s, braided dark hair pinned up, Black woman with smooth dark skin, focused confident look. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "R-01",
    "file": "/crew/astronaut-r01.png",
    "alt": "Portrait of fictional crew member R-01, Commander",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Woman, 45 y; Commander (NOX-04). woman in her mid-40s, short silver-blonde hair, fair skin, composed authoritative expression, fine lines. Do not imitate any real astronaut or public figure."
   },
   {
    "id": "R-02",
    "file": "/crew/astronaut-r02.png",
    "alt": "Portrait of fictional crew member R-02, Flight engineer",
-   "status": "placeholder",
+   "status": "approved",
    "brief": "Man, 40 y; Flight engineer (NOX-04). man around 40, short curly dark hair, Latino features, light beard shadow, relaxed friendly expression. Do not imitate any real astronaut or public figure."
   }
  ]
