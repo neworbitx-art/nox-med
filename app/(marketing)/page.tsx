@@ -3,6 +3,8 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { Patch } from "@/components/marketing/Logo";
 import { ROUTES } from "@/lib/routes";
 import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
+import { TrendPanel } from "@/components/marketing/MedEvidence";
+import { MedDetail } from "@/components/marketing/MedDetail";
 
 export default function Home() {
   return (
@@ -76,11 +78,7 @@ export default function Home() {
       <section id="nox-med" className="mk-section">
         <div className="mk-wrap mk-split">
           <Reveal delay={100}>
-            <div className="mk-panel" aria-hidden="true">
-              <header><span>NOX MED · BLOOD GAS TREND</span><span>pH 7.40</span></header>
-              <div className="mk-bars">{[38, 44, 41, 52, 48, 55, 50, 58, 54, 62, 57, 66].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}</div>
-              <dl><dt>pCO₂</dt><dd>stable</dd><dt>Lactate</dt><dd>trend ↑ watch</dd><dt>Quality flag</dt><dd>QC clean</dd></dl>
-            </div>
+            <TrendPanel />
           </Reveal>
           <Reveal>
             <p className="mk-eyebrow">NOX MED</p>
@@ -95,6 +93,7 @@ export default function Home() {
             <Link href={ROUTES.demoMed} className="mk-link">Open NOX MED <span aria-hidden>→</span></Link>
           </Reveal>
         </div>
+        <MedDetail />
       </section>
 
       <section className="mk-section alt">
