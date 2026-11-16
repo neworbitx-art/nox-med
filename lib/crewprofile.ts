@@ -75,9 +75,9 @@ export interface Episode {
 
 export const CREW_IDENTITY: Record<AstronautId, { persistentId: string; callsign: string }> = {
   "A-01": { persistentId: "NOX-CREW-0001", callsign: "Commander" },
-  "A-02": { persistentId: "NOX-CREW-0002", callsign: "Pilot" },
-  "A-03": { persistentId: "NOX-CREW-0003", callsign: "Mission specialist" },
-  "A-04": { persistentId: "NOX-CREW-0004", callsign: "Flight engineer" },
+  "A-02": { persistentId: "NOX-CREW-0002", callsign: "Flight engineer" },
+  "A-03": { persistentId: "NOX-CREW-0003", callsign: "Science specialist" },
+  "A-04": { persistentId: "NOX-CREW-0004", callsign: "Medical officer" },
   "L-01": { persistentId: "NOX-CREW-0005", callsign: "Commander" }, "L-02": { persistentId: "NOX-CREW-0006", callsign: "Pilot" }, "L-03": { persistentId: "NOX-CREW-0007", callsign: "Mission specialist" },
   "E-01": { persistentId: "NOX-CREW-0008", callsign: "Station commander" }, "E-02": { persistentId: "NOX-CREW-0009", callsign: "Flight engineer" },
   "R-01": { persistentId: "NOX-CREW-0010", callsign: "Commander" }, "R-02": { persistentId: "NOX-CREW-0011", callsign: "Flight engineer" },

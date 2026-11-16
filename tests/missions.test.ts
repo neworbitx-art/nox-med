@@ -68,3 +68,19 @@ describe("missions", () => {
     for (const id of ["cardiovascular", "respiratory", "blood", "metabolic", "endocrine"] as const) expect(SYSTEM_LINKS[id]?.length).toBeGreaterThan(0);
   });
 });
+
+describe("dataset switching", () => {
+  it("restores NOX-01 mission metadata after visiting another mission", async () => {
+    const d = await import("@/lib/data");
+    d.setActiveDataset("NOX-03");
+    expect(d.mission.id).toBe("NOX-03");
+    d.setActiveDataset("NOX-01");
+    expect(d.mission.id).toBe("NOX-01");
+    expect(d.astronauts.map((a) => a.id)).toEqual(["A-01", "A-02", "A-03", "A-04"]);
+  });
+  it("has a portrait manifest entry for every crew member", async () => {
+    const { PORTRAITS } = await import("@/lib/crewprofile");
+    const { ALL_ASTRONAUTS } = await import("@/lib/data");
+    for (const a of ALL_ASTRONAUTS) expect(PORTRAITS.some((p) => p.id === a.id)).toBe(true);
+  });
+});

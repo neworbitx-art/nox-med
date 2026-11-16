@@ -23,7 +23,7 @@ export const ASTRONAUT_IDS = astronauts.map((a) => a.id) as AstronautId[];
 export interface MissionDataset { mission: Mission; astronauts: Astronaut[]; labs: LabResult[]; vitals: VitalSign[]; exercise: ExerciseEvent[]; environment: EnvironmentalSample[]; hourly: HourlyEnvSample[] }
 const fromJson = (j: unknown) => j as MissionDataset;
 export const DATASETS: Record<string, MissionDataset> = {
-  "NOX-01": { mission, astronauts: [...astronauts], labs: [...baseLabs], vitals: [...baseVitals], exercise: [...exerciseEvents], environment: [...environment], hourly: [...hourlyEnv] },
+  "NOX-01": { mission: { ...mission }, astronauts: [...astronauts], labs: [...baseLabs], vitals: [...baseVitals], exercise: [...exerciseEvents], environment: [...environment], hourly: [...hourlyEnv] },
   "NOX-02": fromJson(m02), "NOX-03": fromJson(m03), "NOX-04": fromJson(m04),
 };
 export const ALL_ASTRONAUTS: Astronaut[] = Object.values(DATASETS).flatMap((d) => d.astronauts);

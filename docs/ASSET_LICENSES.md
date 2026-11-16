@@ -11,7 +11,7 @@
 
 **Modifications made by NOX (New Orbit Exploration):** 26 cardiovascular objects (4 heart chambers, great vessels, coronary arteries and cardiac veins) were extracted from the Z-Anatomy Blender file with Blender's Python API (bpy 5.3). Curve objects (vessels) were converted to meshes, each object was kept as a separate named mesh (node name = structure id used by the app), the scene was centered, scaled and exported as a single GLB (≈2.1 MB). Per-node `extras` store the label, group and source object name. No other geometry was altered.
 
-**Attribution text (kept in the app on `/twin` and here):** "3D cardiovascular model derived from Z-Anatomy (CC BY-SA 4.0), which builds on BodyParts3D © The Database Center for Life Science (CC BY-SA 2.1 Japan). Extracted, simplified and re-exported by NOX."
+**Attribution text (kept in the app on the About page and here):** "3D cardiovascular model derived from Z-Anatomy (CC BY-SA 4.0), which builds on BodyParts3D © The Database Center for Life Science (CC BY-SA 2.1 Japan). Extracted, simplified and re-exported by NOX."
 
 **Excluded:** Z-Anatomy components under noncommercial licenses (for example kidney and inner-ear models) were not used. Sketchfab and the BodyParts3D site could not be reached from the build environment, so neither was used.
 

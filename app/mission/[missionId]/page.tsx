@@ -28,7 +28,7 @@ const QUALITY: Record<Quality, { label: string; tone: "ok" | "warn" | "neutral" 
   "device-reported": { label: "Device", tone: "calc" }, "ship-sensor": { label: "Ship sensor", tone: "calc" }, "recorded-with-sample": { label: "With sample", tone: "calc" }, unavailable: { label: "Unavailable", tone: "neutral" },
 };
 const DEEP: Record<BoundSystem, { href: string; label: string }[]> = {
-  cardiovascular: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/wearables", label: "Wearables" }, { href: "/twin", label: "Human Digital Twin" }],
+  cardiovascular: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/wearables", label: "Wearables" }],
   respiratory: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/environment", label: "Environmental Monitoring" }, { href: "/emergency", label: "Emergency Simulator" }],
   blood: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/lab-import", label: "Laboratory Import" }, { href: "/timeline", label: "Integrated Timeline" }],
 };

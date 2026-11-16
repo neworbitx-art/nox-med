@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { Activity, Droplet, FlaskConical, LayoutDashboard, Menu, Siren, Wind, Watch, X, Orbit, Box, Users, Compass, HeartPulse, ArrowLeft } from "lucide-react";
+import { Activity, Droplet, FlaskConical, LayoutDashboard, Menu, Siren, Wind, Watch, X, Orbit, Users, Compass, HeartPulse, ArrowLeft } from "lucide-react";
 import { astronauts } from "@/lib/data";
 import { useMission } from "@/lib/store";
 import { ACTIVE_MISSION_ID, missionById, missionDate, ROUTE_LABEL } from "@/lib/missions";
@@ -15,7 +15,7 @@ import { CREW_COLORS } from "./ui";
 const GATED: { prefix: string; label: string }[] = [
   { prefix: "/mission-control", label: "Mission Control" }, { prefix: "/blood-gas", label: "Blood Gas Intelligence" }, { prefix: "/environment", label: "Environmental Monitoring" },
   { prefix: "/wearables", label: "Wearables" }, { prefix: "/timeline", label: "Integrated Timeline" }, { prefix: "/emergency", label: "Emergency Simulator" },
-  { prefix: "/twin", label: "Human Digital Twin" }, { prefix: "/lab-import", label: "Laboratory Import" },
+  { prefix: "/lab-import", label: "Laboratory Import" },
 ];
 
 const NavCtx = createContext<{ openNav: () => void }>({ openNav: () => {} });
@@ -31,7 +31,6 @@ export const NAV = [
   { href: "/wearables", label: "Wearables", icon: Watch },
   { href: "/timeline", label: "Integrated Timeline", icon: Activity },
   { href: "/emergency", label: "Emergency Simulator", icon: Siren },
-  { href: "/twin", label: "Human Digital Twin", icon: Box },
   { href: "/crew", label: "Crew Profiles", icon: Users },
   { href: "/lab-import", label: "Laboratory Import", icon: FlaskConical },
 ];
