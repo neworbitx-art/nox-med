@@ -93,17 +93,17 @@ function Stage() {
   );
 }
 
-export default function CinematicBody({ hr, reduced, picked, onPick, onHover, focusHeart }: { hr: number; reduced: boolean; picked: Picked | null; onPick: (p: Picked | null) => void; onHover: (p: Picked | null, e?: { x: number; y: number }) => void; focusHeart: boolean }) {
+export default function CinematicBody({ hr, reduced, picked, onPick, onHover, focusHeart, transparent = false }: { transparent?: boolean; hr: number; reduced: boolean; picked: Picked | null; onPick: (p: Picked | null) => void; onHover: (p: Picked | null, e?: { x: number; y: number }) => void; focusHeart: boolean }) {
   const [heart, setHeart] = useState<THREE.Vector3 | null>(null);
   const [idle, setIdle] = useState(true);
   const timer = useRef<number | undefined>(undefined);
   const bump = () => { setIdle(false); window.clearTimeout(timer.current); timer.current = window.setTimeout(() => setIdle(true), 6000); };
   useEffect(() => () => window.clearTimeout(timer.current), []);
   return (
-    <Canvas dpr={[1, 1.5]} camera={{ fov: 32, near: 0.05, far: 40, position: [1.6, 0.45, 5.6] }} gl={{ antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: true }}
-      onPointerDown={bump} onWheel={bump} onPointerMissed={() => onPick(null)} style={{ background: "#020408", touchAction: "none" }} data-testid="body-canvas">
-      <color attach="background" args={["#020408"]} />
-      <fog attach="fog" args={["#020408", 6, 14]} />
+    <Canvas dpr={[1, 1.5]} camera={{ fov: 32, near: 0.05, far: 40, position: [1.6, 0.45, 5.6] }} gl={{ antialias: true, alpha: transparent, powerPreference: "high-performance", preserveDrawingBuffer: true }}
+      onPointerDown={bump} onWheel={bump} onPointerMissed={() => onPick(null)} style={{ background: transparent ? "transparent" : "#020408", touchAction: "none" }} data-testid="body-canvas">
+      {!transparent && <color attach="background" args={["#020408"]} />}
+      {!transparent && <fog attach="fog" args={["#020408", 6, 14]} />}
       <ambientLight intensity={0.35} color="#9fb8d8" />
       <directionalLight position={[2.2, 3.2, 3]} intensity={2.4} color="#fff3e2" />
       <directionalLight position={[-3, 1.8, -2.5]} intensity={2.2} color="#38C9F4" />

@@ -31,7 +31,7 @@ export function BodyShowcase({ hud }: { hud: Hud | null }) {
   return (
     <div className="mk-hud" ref={ref}>
       <div className="mk-hud-canvas" aria-label="Interactive 3D circulatory system. Drag to rotate.">
-        {show && <CinematicBody hr={62} reduced={reduced} picked={picked} onPick={setPicked} onHover={() => {}} focusHeart={false} />}
+        {show && <CinematicBody hr={62} reduced={reduced} picked={picked} onPick={setPicked} onHover={() => {}} focusHeart={false} transparent />}
       </div>
       <i className="mk-hud-line l" /><i className="mk-hud-line r" />
       {hud && (
