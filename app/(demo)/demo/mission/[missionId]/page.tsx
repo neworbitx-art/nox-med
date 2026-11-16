@@ -28,9 +28,9 @@ const QUALITY: Record<Quality, { label: string; tone: "ok" | "warn" | "neutral" 
   "device-reported": { label: "Device", tone: "calc" }, "ship-sensor": { label: "Ship sensor", tone: "calc" }, "recorded-with-sample": { label: "With sample", tone: "calc" }, unavailable: { label: "Unavailable", tone: "neutral" },
 };
 const DEEP: Record<BoundSystem, { href: string; label: string }[]> = {
-  cardiovascular: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/wearables", label: "Wearables" }],
-  respiratory: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/environment", label: "Environmental Monitoring" }, { href: "/emergency", label: "Emergency Simulator" }],
-  blood: [{ href: "/blood-gas", label: "Blood Gas Intelligence" }, { href: "/lab-import", label: "Laboratory Import" }, { href: "/timeline", label: "Integrated Timeline" }],
+  cardiovascular: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/wearables", label: "Wearables" }],
+  respiratory: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/environment", label: "Environmental Monitoring" }, { href: "/demo/emergency", label: "Emergency Simulator" }],
+  blood: [{ href: "/demo/blood-gas", label: "Blood Gas Intelligence" }, { href: "/demo/lab-import", label: "Laboratory Import" }, { href: "/demo/timeline", label: "Integrated Timeline" }],
 };
 const Trend = ({ t }: { t: "up" | "down" | "flat" | null }) => t === null ? <span className="text-mute" aria-label="Trend not available">—</span> : t === "up" ? <ArrowUpRight size={14} aria-label="Rising" /> : t === "down" ? <ArrowDownRight size={14} aria-label="Falling" /> : <Minus size={14} aria-label="Stable" />;
 const lvl = (l: MissionStatusLevel) => <span className="inline-flex items-center gap-1.5 text-[12px]" data-level={l}><StatusDot level={l} />{LEVEL_LABEL[l]}</span>;
@@ -52,7 +52,7 @@ export default function MissionOverview() {
   useEffect(() => { setLocalCode(null); }, [mid]);
 
   const roster = useMemo(() => (m ? crewOf(m) : []), [m]);
-  if (!m) return <><h1 className="text-xl font-semibold">Mission not found</h1><p className="text-mute">This mission code is not in the mission list.</p><Link href="/" className="text-accent hover:underline">← Back to Mission Navigator</Link></>;
+  if (!m) return <><h1 className="text-xl font-semibold">Mission not found</h1><p className="text-mute">This mission code is not in the mission list.</p><Link href="/demo" className="text-accent hover:underline">← Back to Mission Navigator</Link></>;
 
   const ship = shipHealthFor(m), tr = trajectoryFor(m.id), active = m.hasCrewData && m.id === storeMission;
   const crew = roster.find((c) => (c.astronaut && active ? c.astronaut.id === selectedId : c.code === (localCode ?? roster[0].code))) ?? roster[0];
@@ -74,7 +74,7 @@ export default function MissionOverview() {
 
   return (
     <div data-testid="mission-overview" data-mission={m.id}>
-      <div className="mb-1"><Link href="/" className="inline-flex items-center gap-1 text-[12px] text-accent hover:underline" data-testid="back-to-navigator"><Compass size={12} /> Mission Navigator</Link></div>
+      <div className="mb-1"><Link href="/demo" className="inline-flex items-center gap-1 text-[12px] text-accent hover:underline" data-testid="back-to-navigator"><Compass size={12} /> Mission Navigator</Link></div>
       {/* header */}
       <header className="mb-3 border-b border-line pb-3">
         <div className="meta mono text-accent">{m.code} · Crew Health Overview</div>
@@ -187,7 +187,7 @@ export default function MissionOverview() {
           {(atlasOn ? DEEP[bound] : DEEP.cardiovascular).map((x) => active
             ? <Link key={x.href} href={x.href} className="rounded-sm border border-line bg-panel px-3 py-1.5 text-[13px] font-medium text-ink2 hover:border-accent/60 hover:text-ink">{x.label}</Link>
             : <span key={x.href} aria-disabled className="cursor-not-allowed rounded-sm border border-line bg-bg2 px-3 py-1.5 text-[13px] text-mute">{x.label}</span>)}
-          <Link href="/" className="rounded-sm border border-accent/50 px-3 py-1.5 text-[13px] text-accent hover:bg-accent/10">Back to Mission Navigator</Link>
+          <Link href="/demo" className="rounded-sm border border-accent/50 px-3 py-1.5 text-[13px] text-accent hover:bg-accent/10">Back to Mission Navigator</Link>
         </div>
       </Card>
     </div>

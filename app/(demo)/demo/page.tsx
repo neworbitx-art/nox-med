@@ -86,7 +86,7 @@ function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }:
             <span className="text-mute">Crew health summary: </span>
             {crew ? <span>{[crew.nominal && `${crew.nominal} nominal`, crew.watch && `${crew.watch} watch`, crew.attention && `${crew.attention} attention`, crew.critical && `${crew.critical} critical`].filter(Boolean).join(" · ")}</span> : <span className="text-ink2">No crew health records for this mission</span>}
           </div>
-          <Link href={`/mission/${m.id}`} onClick={onOpen} data-testid="crew-overview" className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-accent underline-offset-2 hover:underline">Crew Health Overview <ArrowRight size={11} /></Link>
+          <Link href={`/demo/mission/${m.id}`} onClick={onOpen} data-testid="crew-overview" className="mt-1.5 inline-flex items-center gap-1 font-mono text-[11px] text-accent underline-offset-2 hover:underline">Crew Health Overview <ArrowRight size={11} /></Link>
         </div>
         <div className="p-sec" data-testid="ship-health" data-overall={ship.overall}>
           <div className="mb-1.5 flex items-center justify-between"><span className="p-lab">Spacecraft environment</span><Level l={ship.overall} /></div>
@@ -130,7 +130,7 @@ function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }:
         </details>
       </div>
       <div className="shrink-0 border-t border-white/[0.09] px-[18px] py-3.5">
-        <Link href={`/mission/${m.id}`} onClick={onOpen} data-testid="open-mission" className="open-btn flex w-full items-center justify-center gap-1.5 px-3 py-2.5 font-mono text-[12px] font-semibold tracking-wider">OPEN MISSION <ArrowRight size={14} /></Link>
+        <Link href={`/demo/mission/${m.id}`} onClick={onOpen} data-testid="open-mission" className="open-btn flex w-full items-center justify-center gap-1.5 px-3 py-2.5 font-mono text-[12px] font-semibold tracking-wider">OPEN MISSION <ArrowRight size={14} /></Link>
       </div>
     </aside>
   );

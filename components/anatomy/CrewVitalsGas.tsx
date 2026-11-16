@@ -78,7 +78,7 @@ export function GasPanel({ id, labs }: { id: AstronautId; labs: LabResult[] }) {
       <div className="mt-2 overflow-x-auto"><table className="w-full text-[10px]" data-testid="gas-history"><thead><tr className="text-left text-mute"><th className="pr-2 font-normal">Day</th><th className="pr-2 font-normal">Type</th>{COLS.map((k) => <th key={k} className="pr-2 font-normal">{METRICS[k].label}</th>)}</tr></thead>
         <tbody className="num">{recent.map((l) => <tr key={l.id} className="border-t border-white/[0.06]"><td className="pr-2 py-0.5 text-ink2">{l.missionDay}</td><td className="pr-2 text-mute">{l.sampleType.slice(0, 3)}</td>{COLS.map((k) => <td key={k} className="pr-2" style={{ color: l.values[k] === undefined ? undefined : TONE[statusIn(l, k)] }}>{fmt(k, l.values[k])}</td>)}</tr>)}</tbody></table></div>
       <p className="mt-1 text-[10px] text-mute">{mine.length} samples · ABL90 FLEX PLUS · last day {lastLab.missionDay}. Trends use comparable samples only; rejected samples hidden. Green band = reference range.</p>
-      <Link href="/blood-gas" className="mt-1 inline-flex items-center gap-1 text-[11px] text-accent hover:underline">Open Blood Gas Intelligence <ArrowRight size={11} /></Link>
+      <Link href="/demo/blood-gas" className="mt-1 inline-flex items-center gap-1 text-[11px] text-accent hover:underline">Open Blood Gas Intelligence <ArrowRight size={11} /></Link>
     </div>
   );
 }

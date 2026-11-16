@@ -22,8 +22,8 @@ export function MissionGate({ module, children }: { module: string; children: Re
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button onClick={() => selectMission(ACTIVE_MISSION_ID)} className="rounded-sm border border-accent bg-accent px-3 py-1.5 text-[12px] font-semibold text-bg" data-testid="switch-active">Switch to {ACTIVE_MISSION_ID} (data loaded)</button>
-          <Link href={`/mission/${m.id}`} className="rounded-sm border border-line px-3 py-1.5 text-[12px] text-ink2 hover:border-accent/60">Open {m.code} overview</Link>
-          <Link href="/" className="inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 text-[12px] text-ink2 hover:border-accent/60"><Compass size={13} /> Mission Navigator</Link>
+          <Link href={`/demo/mission/${m.id}`} className="rounded-sm border border-line px-3 py-1.5 text-[12px] text-ink2 hover:border-accent/60">Open {m.code} overview</Link>
+          <Link href="/demo" className="inline-flex items-center gap-1.5 rounded-sm border border-line px-3 py-1.5 text-[12px] text-ink2 hover:border-accent/60"><Compass size={13} /> Mission Navigator</Link>
         </div>
       </section>
       <div className="grid gap-4 lg:grid-cols-2">
@@ -34,7 +34,7 @@ export function MissionGate({ module, children }: { module: string; children: Re
         </section>
         <section className="border border-line bg-panel p-4"><ShipHealthPanel m={m} compact /><p className="mt-2 text-[11px] text-mute">Source: {m.dataSource}. Ship measurements are not clinical values.</p></section>
       </div>
-      <Link href="/" className="inline-flex items-center gap-1.5 text-[12px] text-mute hover:text-ink"><ArrowLeft size={13} /> Back to Mission Navigator</Link>
+      <Link href="/demo" className="inline-flex items-center gap-1.5 text-[12px] text-mute hover:text-ink"><ArrowLeft size={13} /> Back to Mission Navigator</Link>
     </div>
   );
 }

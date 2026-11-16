@@ -119,7 +119,7 @@ export default function Environment() {
             </tbody>
           </table>
           <p className="mt-2 text-[11px] text-mute">Partial pressure (mmHg, kPa) is the gas&apos;s share of total pressure; % and ppm are volume fractions that depend on total pressure. Blood pCO₂ is a physiological measurement in blood and is shown separately in Blood Gas Intelligence.</p>
-          <p className="mt-2 text-[12px]"><Link href="/timeline" className="font-medium text-accent underline">Open Integrated Timeline</Link> to explore cabin CO₂ and {selectedId}&apos;s blood pCO₂ on a shared time axis.</p>
+          <p className="mt-2 text-[12px]"><Link href="/demo/timeline" className="font-medium text-accent underline">Open Integrated Timeline</Link> to explore cabin CO₂ and {selectedId}&apos;s blood pCO₂ on a shared time axis.</p>
         </Card>
 
         <Card code="QA-COVERAGE" title="Data completeness" subtitle={`Recorded hours in window (${Math.round(t1 - t0)} d)`}>
