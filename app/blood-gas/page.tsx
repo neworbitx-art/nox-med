@@ -176,7 +176,7 @@ export default function BloodGas() {
                   <td className="num py-1 pr-3">{l.collectedAt.slice(0, 16).replace("T", " ")}</td>
                   <td className="num py-1 pr-3">{l.missionDay}</td>
                   <td className="py-1 pr-3">{l.sampleType}</td>
-                  <td className="py-1 pr-3"><Tag tone={l.verification === "verified" ? "ok" : l.verification === "pending" ? "warn" : "crit"}>{l.verification === "verified" ? "QC passed" : l.verification}</Tag><Tag tone="calc">{l.origin === "simulated" ? "synthetic" : "imported"}</Tag></td>
+                  <td className="py-1 pr-3"><Tag tone={l.verification === "verified" ? "ok" : l.verification === "pending" ? "warn" : "crit"}>{l.verification === "verified" ? "QC passed" : l.verification}</Tag><Tag tone="calc">{l.origin === "simulated" ? "recorded" : "imported"}</Tag></td>
                   <td className="py-1 pr-3 text-warn">{l.qcFlags.map((f) => f.code).join(", ") || <span className="text-mute">—</span>}</td>
                   {(["pH", "pCO2", "HCO3", "pO2", "Lac", "tHb", "K"] as MetricKey[]).map((k) => {
                     const st = statusIn(l, k);

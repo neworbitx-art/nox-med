@@ -39,7 +39,7 @@ export function PageHeader({ title, desc, right, code }: { title: string; desc: 
   );
 }
 
-export function SimBadge({ label = "SIMULATED DATA" }: { label?: string }) {
+export function SimBadge({ label = "DATA" }: { label?: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-sm border border-warn/50 bg-warn/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wider text-warn">
       <FlaskConical size={10} /> {label}

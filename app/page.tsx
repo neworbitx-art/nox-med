@@ -117,7 +117,7 @@ function MissionPanel({ m, onClose, closing, pickedCp, onPick, onJump, onOpen }:
                 <button onClick={() => onPick(c.id)} aria-pressed={pickedCp === c.id} data-cp={c.id} {...chipProps(pickedCp === c.id)}>{c.label}</button>
                 <span className="num flex-1 text-right text-mute">{fmtT(c.plannedDay - 1)} · {c.actualDay === null ? "actual —" : `actual ${fmtT(c.actualDay - 1)}`}</span>
                 <span className={checkpointStatus(m, c) === "Completed" ? "text-ok" : "text-mute"}>{checkpointStatus(m, c)}</span>
-                <button onClick={() => onJump(c.plannedDay)} aria-label={`Jump simulation to ${c.label}`} data-jump={c.id} className="g-btn px-1.5 text-[10px]">▶ sim</button>
+                <button onClick={() => onJump(c.plannedDay)} aria-label={`Jump to ${c.label}`} data-jump={c.id} className="g-btn px-1.5 text-[10px]">▶ sim</button>
               </li>
             ))}
           </ul>
@@ -256,7 +256,7 @@ export default function MissionNavigatorPage() {
               <span aria-hidden className="num pointer-events-none absolute -top-7 -translate-x-1/2 whitespace-nowrap rounded-full border border-accent/40 bg-black/80 px-2 py-0.5 font-mono text-[10px] text-ink transition-opacity duration-150" style={{ left: `clamp(40px, ${pct}%, calc(100% - 40px))`, opacity: scrubbing ? 1 : 0 }} data-testid="scrub-tip">{metOf(day - 1)}</span></>); })()}
           </div>
           <span className="num font-mono text-[12px] font-semibold text-ink" data-testid="sim-t">{metOf(day - 1)}</span>
-          <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model.">{live ? "● LIVE" : "REPLAY · PAST"}</span>
+          <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-wide ${live ? "border-lime/60 text-lime" : "border-accent/60 text-accent"}`} data-testid="sim-state" title="Positions are computed from the mission trajectory model.">{live ? "● LIVE" : "PAST"}</span>
         </div>
         <div className="sr-only" data-testid="sim-readout"><span>{dateOfDay(m, day)}</span><span data-testid="sim-phase">{point?.phase ?? "—"}</span></div>
       </div>
@@ -289,7 +289,7 @@ export default function MissionNavigatorPage() {
         <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-0.5" data-testid="telemetry-values" title={mode === "network" ? NET_DISCLOSURE : "Modeled from locally stored ephemerides (J2000 ecliptic) with Kepler/Lambert propagation. Body sizes and Local-view distances are visually scaled."}>
           <span className="font-semibold text-accent" data-testid="tm-mission">{m.code} (SELECTED)</span>
           <span data-testid="tm-status">STATUS {m.vehicle.phaseLabel.toUpperCase()}</span>
-          <span data-testid="tm-met">{live ? "MET" : "REPLAY"} {metOf(day - 1)}</span>
+          <span data-testid="tm-met">MET {metOf(day - 1)}</span>
           <span data-testid="tm-phase">PHASE {(point?.phase ?? "—").toUpperCase()}</span>
           {tele?.dist ? <span data-testid="tm-dist">{tele.dist.label} {fmtKm(tele.dist.km)}</span> : <span className="text-mute">DIST unavailable</span>}
           {tele?.speed ? <span data-testid="tm-speed">{tele.speed.label} {tele.speed.kmS.toFixed(2)} km/s</span> : <span className="text-mute">v unavailable</span>}

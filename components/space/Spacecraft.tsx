@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 export type Variant = "transit" | "cislunar" | "station" | "relay";
-/** Vehicle look by route: Mars missions use a Starship-class stainless vehicle, Earth/lunar missions an Orion-class crew capsule + service module (generic procedural models; no real markings or affiliation). */
+/** Vehicle look by route: Mars missions use a stainless transit vehicle, Earth/lunar missions a crew capsule + service module (generic procedural models; no real markings or affiliation). */
 const VARIANT: Record<string, Variant> = { "earth-mars-transfer": "transit", "lunar-transfer": "cislunar", "earth-orbit": "station", "mars-orbit": "relay" };
 export const variantFor = (routeKind: string): Variant => VARIANT[routeKind] ?? "transit";
 
@@ -49,8 +49,8 @@ const flapShape = (L: number, H: number, sweep: number) => { const sh = new THRE
 const mkFlap = (L: number, H: number, sw: number, d: number) => new THREE.ExtrudeGeometry(flapShape(L, H, sw), { depth: d, bevelEnabled: false });
 const fwdFlap = mkFlap(0.07, 0.06, 0.012, 0.004), aftFlap = mkFlap(0.13, 0.095, 0.02, 0.004);
 const fwdFlapEdge = mkFlap(0.07, 0.016, 0.0, 0.002), aftFlapEdge = mkFlap(0.13, 0.022, 0.0, 0.002);
-/** Starship-class: stainless cylinder, ogive nose, dark belly heat shield, two fore and two aft flaps, engine skirt. Long axis +X. */
-function Starship() {
+/** Transit vehicle: stainless cylinder, ogive nose, dark belly heat shield, two fore and two aft flaps, engine skirt. Long axis +X. */
+function TransitVessel() {
   const R = 0.085;
   const nose = useMemo(() => { const pts: THREE.Vector2[] = []; for (let i = 0; i <= 24; i++) { const t = i / 24; pts.push(new THREE.Vector2(R * Math.pow(1 - t * t, 0.62), t * 0.3)); } return new THREE.LatheGeometry(pts, 40); }, []);
   useMemo(() => () => nose.dispose(), [nose]);
@@ -75,8 +75,8 @@ function Starship() {
   );
 }
 
-/** Orion-class: conical crew module with heat shield, service module with gold-foil band, engine bell and four X-configured solar array wings. Long axis +X. */
-function Orion() {
+/** Crew capsule: conical crew module with heat shield, service module with gold-foil band, engine bell and four X-configured solar array wings. Long axis +X. */
+function CrewCapsule() {
   return (
     <group scale={1.55}>
       <mesh position={[0.2, 0, 0]} rotation={[0, 0, -Math.PI / 2]} material={white}><cylinderGeometry args={[0.04, 0.1, 0.15, 40]} /></mesh>
@@ -92,7 +92,7 @@ function Orion() {
 }
 
 /** Model at the parent's origin. The parent group positions, orients (long axis = +X) and scales it. */
-function Body({ variant }: { variant: Variant }) { return variant === "transit" || variant === "relay" ? <Starship /> : <Orion />; }
+function Body({ variant }: { variant: Variant }) { return variant === "transit" || variant === "relay" ? <TransitVessel /> : <CrewCapsule />; }
 
 export interface SpacecraftProps { variant: Variant; emphasis: "active" | "selected" | "idle" | "dim"; accent: string; reduced: boolean }
 

@@ -92,7 +92,7 @@ export function Sun({ radius }: { radius: number }) {
   );
 }
 
-/** Hipparcos star map (NASA) plus a sparse extra star layer for depth. */
+/** Hipparcos star map plus a sparse extra star layer for depth. */
 export function Starfield() {
   const [map] = useTexture(["/textures/stars.jpg"]);
   const pts = useMemo(() => {

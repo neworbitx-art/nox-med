@@ -29,7 +29,7 @@ export const SCENARIOS3: ScenarioDef[] = [
     summary: "Arterial pCO₂ climbs, pH falls and bicarbonate rises slightly (acute respiratory acidosis) while cabin CO₂ also rises. The two are shown together as temporal co-occurrence only.",
     focus: ["pCO2", "pH", "HCO3", "pO2"], caveat: "Cabin CO₂ (ambient gas) is not blood pCO₂ and is not shown to be the cause of the deterioration." },
   { id: "k", name: "Electrolyte disturbance", short: "Progressive hyperkalemia", durationMin: 240, sampleEveryMin: 20, envEveryMin: 10, sampleType: "venous",
-    summary: "Potassium rises across sequential venous samples with a mild metabolic acidosis, after a simulated exertion/injury context event. Alerts feed a medical-review workflow.",
+    summary: "Potassium rises across sequential venous samples with a mild metabolic acidosis, after an exertion/injury context event. Alerts feed a medical-review workflow.",
     focus: ["K", "HCO3", "iCa", "Lac"], caveat: "Cabin environment is nominal in this scenario. Venous samples: gas values use venous ranges and oxygenation is not interpreted." },
   { id: "cal", name: "Analyzer calibration failure", short: "Invalid glucose / lactate", durationMin: 120, sampleEveryMin: 15, envEveryMin: 10, sampleType: "arterial",
     summary: "The analyzer reports calibration errors on the glucose and lactate sensors and prints implausible values. NOX MED withholds them from interpretation instead of alarming.",
@@ -120,17 +120,17 @@ function envAt(id: ScenarioId, t: number): EnvObs {
 
 const SCRIPT: Record<ScenarioId, { t: number; text: string }[]> = {
   resp: [
-    { t: 0, text: "Scenario start (simulated): crew member at personal baseline; cabin CO₂ nominal." },
+    { t: 0, text: "Scenario start: crew member at personal baseline; cabin CO₂ nominal." },
     { t: 30, text: "Scripted: cabin CO₂ scrubber efficiency begins to fall." },
-    { t: 240, text: "Scripted: cabin CO₂ reaches its simulated peak." },
+    { t: 240, text: "Scripted: cabin CO₂ reaches its peak." },
     { t: 270, text: "Scripted: scrubber capacity restored; cabin CO₂ starts to fall." },
   ],
   k: [
-    { t: 0, text: "Scenario start (simulated): venous sampling every 20 min; cabin environment nominal." },
+    { t: 0, text: "Scenario start: venous sampling every 20 min; cabin environment nominal." },
     { t: 15, text: "Scripted crew log: strenuous exertion with an equipment-handling injury (context only, not a diagnosis)." },
   ],
   cal: [
-    { t: 0, text: "Scenario start (simulated): arterial sampling every 15 min; patient state unchanged throughout." },
+    { t: 0, text: "Scenario start: arterial sampling every 15 min; patient state unchanged throughout." },
     { t: 40, text: "Scripted: analyzer glucose/lactate sensors begin to fail calibration." },
     { t: 80, text: "Scripted: sensor recalibration completed; next sample re-analyzed." },
   ],
@@ -288,7 +288,7 @@ export function buildScenario(id: ScenarioId, astronautId: AstronautId = "A-01")
     ...SCRIPT[id].map((e) => ({ t: e.t, kind: (e.t === 0 ? "start" : "script") as SimEvent["kind"], text: e.text })),
     ...samples.map((s) => ({ t: s.t, kind: "lab" as const, text: `Sample ${s.id.split("-").pop()} (${def.sampleType}): ${def.focus.map((k) => `${label(k)} ${fmt(k, s.lab.values[k])}`).join(" · ")}${s.lab.qcFlags.length ? "  ⚠ analyzer flag" : ""}` })),
     ...alerts.map((a) => ({ t: a.t, kind: "alert" as const, severity: a.severity, text: a.title, alertId: a.id })),
-    { t: def.durationMin, kind: "end" as const, text: "Scenario complete (simulated)." },
+    { t: def.durationMin, kind: "end" as const, text: "Scenario complete." },
   ].sort((a, b) => a.t - b.t);
 
   const checksum = hashOf({ v: SIM_VERSION, id, samples: samples.map((s) => s.lab.values), env: env.map((e) => [e.co2, e.o2]), flags: samples.map((s) => s.lab.qcFlags.map((f) => f.code)), alerts: alerts.map((a) => [a.t, a.title]) });

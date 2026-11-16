@@ -34,7 +34,7 @@ export function InjectionAnalysis() {
     const worst: Severity = res.firstCritical ? "critical" : res.firstRange ? "warning" : "watch";
     const a: Alert = {
       id: `SIM-${Date.now()}`, astronautId: selectedId, missionDay: currentDay, severity: worst, category: "simulation",
-      title: `Simulated: ${sc.name} (${run.sev}% severity)`,
+      title: `Scenario: ${sc.name} (${run.sev}% severity)`,
       detail: `Baseline-drift detection ${t(res.firstTrend?.trend)}; range alert ${t(res.firstRange?.range)}; critical ${t(res.firstCritical?.critical)}.`,
     };
     logSimEvent(a); setLogged(true);
@@ -67,7 +67,7 @@ export function InjectionAnalysis() {
           </div>
 
           <div className="mb-4 grid gap-4 xl:grid-cols-[3fr_2fr]">
-            <Card title={`${sc.name} — ${m.label} over ${HORIZON_MIN} min`} subtitle={`Simulated ${selectedId} response, one measurement every 5 min`}
+            <Card title={`${sc.name} — ${m.label} over ${HORIZON_MIN} min`} subtitle={`Projected ${selectedId} response, one measurement every 5 min`}
               right={<Select label="Metric" value={show} onChange={setMetric} options={METRIC_KEYS.map((k) => ({ value: k, label: METRICS[k].label }))} />}>
               <TrendChart xKey="t" xLabel="Minutes from onset" decimals={m.decimals} leftLabel={m.unit} band={{ low: m.refLow, high: m.refHigh }}
                 data={res.rows.map((r, i) => ({ t: res.minutes[i], v: r[show] ?? null }))}

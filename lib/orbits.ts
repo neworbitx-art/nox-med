@@ -10,7 +10,7 @@ export const unit = (a: V3): V3 => mul(a, 1 / norm(a));
 
 export const AU_KM = 149597870.7;
 export const DAY_S = 86400;
-/** Gravitational parameters, km^3/s^2 (IAU/JPL values). */
+/** Gravitational parameters, km^3/s^2 (IAU values). */
 export const GM = { sun: 1.32712440018e11, earth: 398600.4418, moon: 4902.800066, mars: 42828.375214 } as const;
 /** Mean equatorial radii, km. */
 export const RADIUS = { sun: 695700, earth: 6378.137, moon: 1737.4, mars: 3396.19 } as const;

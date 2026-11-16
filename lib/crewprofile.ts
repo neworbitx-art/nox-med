@@ -51,7 +51,7 @@ export const recordsForSystem = (all: MedicalRecord[], id: AstronautId, sys: Sys
 
 /** Optional demonstration records. Loaded only when the user asks; nothing is assigned by default. */
 export const DEMO_RECORDS: Omit<MedicalRecord, "id">[] = [
-  { astronautId: "A-02", kind: "cgm", title: "Continuous glucose monitor", detail: "Subcutaneous sensor, placed in simulated preflight. Device readings are not blood-gas analyzer results.", systems: ["endocrine"], date: "2031-04-12", fictional: true, origin: "demo" },
+  { astronautId: "A-02", kind: "cgm", title: "Continuous glucose monitor", detail: "Subcutaneous sensor, placed preflight. Device readings are not blood-gas analyzer results.", systems: ["endocrine"], date: "2031-04-12", fictional: true, origin: "demo" },
   { astronautId: "A-03", kind: "pacemaker", title: "Dual-chamber pacemaker", detail: "device model, settings and interrogation data are not provided.", systems: ["cardiovascular"], date: "2027-09-03", fictional: true, origin: "demo" },
   { astronautId: "A-04", kind: "orthopedic", title: "Tibial intramedullary nail, right", detail: "Record of a healed fracture fixation.", systems: ["musculoskeletal"], date: "2024-02-20", fictional: true, origin: "demo" },
   { astronautId: "A-01", kind: "allergy", title: "Penicillin allergy", detail: "Sample record.", systems: ["immune"], fictional: true, origin: "demo" },

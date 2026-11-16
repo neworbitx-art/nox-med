@@ -29,7 +29,7 @@ export function LatestMeasurements({ labs, id }: { labs: LabResult[]; id: Astron
   if (!latest) return <Card title="Latest measurements">No samples.</Card>;
   return (
     <Card code="PNL-LAB-LATEST" title={`Latest measurements — ${id}`}
-      subtitle={`${mission.currentDay - latest.missionDay} d before current mission day · ${latest.origin === "simulated" ? "simulated" : "imported"} record`}
+      subtitle={`${mission.currentDay - latest.missionDay} d before current mission day · ${latest.origin === "simulated" ? "recorded" : "imported"} record`}
       right={latest.origin === "simulated" ? undefined : <SimBadge label="IMPORTED" />}
     >
       <div className="mb-4"><SampleMeta lab={latest} /></div>

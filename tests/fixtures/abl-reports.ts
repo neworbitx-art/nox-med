@@ -1,6 +1,6 @@
 /** Synthetic ABL90-style report text. Values and identifiers are invented; no real patient data. */
 export const ES_VENOUS = `
-RADIOMETER ABL90 SERIES
+ABL90 SERIES
 ABL90 SYNTHETIC-UNIT-0001
 INFORME PACIENTE Jeringa - J 65uL
 09:05 AM 03/21/2031 Muestra # 00001
@@ -51,7 +51,7 @@ cLac 0210: Presencia de error(es) de calibración
 `;
 
 export const EN_ARTERIAL = `
-RADIOMETER ABL90 FLEX
+ABL90 FLEX
 Patient Report
 2031-03-22 14:30
 Patient ID SYN-B

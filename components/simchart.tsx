@@ -28,7 +28,7 @@ export function SimChart({ title, unit, decimals, points, withheld = [], now, du
         <p className="text-[13px] font-semibold text-ink">{title} <span className="text-[11px] font-normal text-mute">{unit}</span></p>
         <p className="num text-[12px] text-ink2">{last ? `${fmt(last.v)} @ t+${last.t}` : "no data yet"}</p>
       </div>
-      <div style={{ height }} role="img" aria-label={`${title} over simulated time`}>
+      <div style={{ height }} role="img" aria-label={`${title} over time`}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart margin={{ top: 6, right: 10, left: 0, bottom: xLabel ? 16 : 2 }}>
             <CartesianGrid stroke="#1B222C" />

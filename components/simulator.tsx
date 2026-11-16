@@ -90,7 +90,7 @@ export function Simulator() {
 
   return (
     <div className="space-y-4">
-      <Card code="SIM-SEL" title="Scenario" subtitle="Three deterministic scripted scenarios. Every value is a fixed function of simulated time; nothing is random or model-generated.">
+      <Card code="SIM-SEL" title="Scenario" subtitle="Three deterministic scripted scenarios. Every value is a fixed function of time; nothing is random or model-generated.">
         <div className="grid gap-3 md:grid-cols-3" role="radiogroup" aria-label="Scenario">
           {SCENARIOS3.map((s) => (
             <button key={s.id} role="radio" aria-checked={s.id === sid} onClick={() => pick(s.id)}
@@ -108,10 +108,10 @@ export function Simulator() {
           <Btn onClick={start} disabled={running}><Play size={14} /> {done ? "Restart" : idx > 0 ? "Resume" : "Start"}</Btn>
           <Btn variant="ghost" onClick={() => setRunning(false)} disabled={!running}><Pause size={14} /> Pause</Btn>
           <Btn variant="ghost" onClick={reset}><RotateCcw size={14} /> Reset</Btn>
-          <Btn variant="ghost" onClick={() => { setRunning(false); setIdx((i) => Math.min(lastIdx, i + 1)); }} disabled={done} title="Advance 5 simulated minutes"><SkipForward size={14} /> Step +5 min</Btn>
+          <Btn variant="ghost" onClick={() => { setRunning(false); setIdx((i) => Math.min(lastIdx, i + 1)); }} disabled={done} title="Advance 5 minutes"><SkipForward size={14} /> Step +5 min</Btn>
           <Segmented value={speed} onChange={setSpeed} options={SPEEDS} label="Speed" />
           <div className="ml-auto flex min-w-[240px] flex-1 items-center gap-3">
-            <input type="range" min={0} max={lastIdx} value={idx} onChange={(e) => { setRunning(false); setIdx(Number(e.target.value)); }} className="w-full accent-[#38C9F4]" aria-label="Simulation time" />
+            <input type="range" min={0} max={lastIdx} value={idx} onChange={(e) => { setRunning(false); setIdx(Number(e.target.value)); }} className="w-full accent-[#38C9F4]" aria-label="Scenario time" />
             <span className="num whitespace-nowrap text-sm text-ink" aria-live="off">T+{now} / {def.durationMin} min · {clock(now)}</span>
           </div>
         </div>
@@ -189,7 +189,7 @@ export function Simulator() {
             {[...alerts].reverse().map((a) => <AlertRow key={a.id} a={a} open={open === a.id} toggle={() => setOpen(open === a.id ? null : a.id)} did={did} review={review} />)}
           </ul>
         )}
-        <p className="mt-3 border-t border-line pt-2 text-xs text-mute">Medical review workflow: acknowledge, request a repeat sample, or escalate. These actions are logged with simulated time only. They do not change the scripted measurements and are not treatment instructions.</p>
+        <p className="mt-3 border-t border-line pt-2 text-xs text-mute">Medical review workflow: acknowledge, request a repeat sample, or escalate. These actions are logged with scenario time only. They do not change the scripted measurements and are not treatment instructions.</p>
       </Card>
 
       {summary && (

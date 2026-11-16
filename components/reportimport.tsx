@@ -99,7 +99,7 @@ export function ReportImport() {
             {status.kind === "error" ? <XCircle size={15} className="mt-0.5 shrink-0" /> : <AlertTriangle size={15} className="mt-0.5 shrink-0" />}<span>{status.text}</span>
           </div>
         )}
-        <p className="mt-3 border-t border-line pt-2 text-xs text-mute">Real clinical reports stay separate from the simulated crew dataset: they are stored only in this browser, are not merged into crew trends or alerts, and the report&apos;s patient ID, name and sample number are never saved.</p>
+        <p className="mt-3 border-t border-line pt-2 text-xs text-mute">Real clinical reports stay separate from the mission crew dataset: they are stored only in this browser, are not merged into crew trends or alerts, and the report&apos;s patient ID, name and sample number are never saved.</p>
       </Card>
 
       {draft && (

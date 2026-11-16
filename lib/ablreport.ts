@@ -238,7 +238,7 @@ export const emptyField = (k: AnalyteKey): DraftField => ({ text: "", source: "u
 
 export function emptyDraft(source: Draft["source"], subject = "Subject 1"): Draft {
   return {
-    date: "", time: "", subject, sampleType: "unknown", temperature: "", fio2: "", analyzer: "Radiometer ABL90-class", source, dateAmbiguous: false,
+    date: "", time: "", subject, sampleType: "unknown", temperature: "", fio2: "", analyzer: "ABL90", source, dateAmbiguous: false,
     fields: Object.fromEntries(ANALYTE_KEYS.map((k) => [k, emptyField(k)])) as Record<AnalyteKey, DraftField>, flags: [],
   };
 }
@@ -252,7 +252,7 @@ export function draftFromExtraction(rep: ExtractedReport, subject = "Subject 1")
   d.sampleType = rep.sampleType ?? "unknown";
   d.temperature = rep.temperatureC !== undefined ? String(rep.temperatureC) : "";
   d.fio2 = rep.fio2 !== undefined ? String(Math.round(rep.fio2 * 1000) / 10) : "";
-  if (rep.analyzer) d.analyzer = `Radiometer ${rep.analyzer}`;
+  if (rep.analyzer) d.analyzer = rep.analyzer;
   for (const k of ANALYTE_KEYS) {
     const f = rep.fields[k];
     if (f?.value !== undefined) d.fields[k] = { text: String(f.value), source: "extracted", calculated: f.calculated, questionable: f.questionable, unit: analyteMeta(k).unit, note: f.note, checked: false };

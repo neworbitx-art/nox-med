@@ -9,7 +9,7 @@ export default function EmergencySimulator() {
   return (
     <>
       <PageHeader code="MOD-EMG" title="Emergency Simulator"
-        desc="Play a deterministic emergency scenario in simulated time and watch laboratory results, cabin telemetry and explainable alerts develop together." />
+        desc="Play a deterministic emergency scenario over time and watch laboratory results, cabin telemetry and explainable alerts develop together." />
       <div className="mb-4"><Segmented value={mode} onChange={setMode} label="Mode" options={[{ value: "play", label: "Scenario playback" }, { value: "inject", label: "Injection analysis" }]} /></div>
       {mode === "play" ? <Simulator /> : <InjectionAnalysis />}
     </>

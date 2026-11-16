@@ -13,7 +13,7 @@ export interface TelemetrySnapshot {
   missionDay: number | null;
   cabin: EnvironmentalSample | null;
   source: string;
-  /** True only for a verified real-time stream. Local replays are never live. */
+  /** True only for a verified real-time stream. Local datasets are never live. */
   live: boolean;
 }
 export interface TelemetryAdapter {
@@ -30,7 +30,7 @@ export const localReplayAdapter: TelemetryAdapter = {
     const d = DATASETS[missionId];
     if (!d || d.environment.length === 0) return { missionId, timestamp: null, missionDay: null, cabin: null, source: "No telemetry source for this mission", live: false };
     const c = d.environment[d.environment.length - 1], dt = new Date(Date.parse(d.mission.startDate + "T00:00:00Z") + (c.missionDay - 1) * 86400000).toISOString().slice(0, 10);
-    return { missionId, timestamp: dt, missionDay: c.missionDay, cabin: c, source: "Mission replay dataset", live: false };
+    return { missionId, timestamp: dt, missionDay: c.missionDay, cabin: c, source: "Mission dataset", live: false };
   },
   subscribe(missionId, cb) { cb(this.latest(missionId)); return () => {}; },
 };

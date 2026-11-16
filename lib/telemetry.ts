@@ -19,7 +19,7 @@ export const co2Ppm = (co2Mmhg: number, pressureKpa: number) => co2FractionPct(c
 export type EnvVar = "co2" | "o2pp" | "pressure" | "temp" | "humidity" | "radiation" | "dose";
 export interface EnvVarDef { label: string; unit: string; decimals: number; note: string; low?: number; high?: number; warn?: number; derived?: boolean }
 export const ENV_VARS: Record<EnvVar, EnvVarDef> = {
-  co2: { label: "Cabin CO₂ partial pressure", unit: "mmHg", decimals: 2, high: 4, warn: 5.3, note: "Ambient gas partial pressure measured in cabin air (not blood pCO₂). Alert lines are prototype thresholds." },
+  co2: { label: "Cabin CO₂ partial pressure", unit: "mmHg", decimals: 2, high: 4, warn: 5.3, note: "Ambient gas partial pressure measured in cabin air (not blood pCO₂). Alert lines are configurable thresholds." },
   o2pp: { label: "Cabin O₂ partial pressure", unit: "mmHg", decimals: 1, low: 148, derived: true, note: "Calculated: O₂ fraction × total pressure (dry-gas approximation)." },
   pressure: { label: "Total atmospheric pressure", unit: "kPa", decimals: 2, low: 100.5, high: 102, note: "Total cabin pressure; 1 kPa = 7.50 mmHg." },
   temp: { label: "Cabin temperature", unit: "°C", decimals: 1, low: 20, high: 25, note: "Bulk cabin air temperature." },

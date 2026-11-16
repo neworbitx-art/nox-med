@@ -90,7 +90,7 @@ export const MISSIONS: MissionRecord[] = [
       sub("scrubber", "Environmental control / life support", "watch", "Cabin CO₂ is above the watch line. Scrubber performance has not been diagnosed."),
       sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
     ],
-    dataSource: "Mission replay dataset", hasCrewData: true,
+    dataSource: "Mission dataset", hasCrewData: true,
   },
   {
     id: "NOX-02", name: "Lunar Gateway Sortie", code: "NOX-02", destination: "moon", destinationLabel: "Moon", startDate: "2031-11-05",
@@ -103,7 +103,7 @@ export const MISSIONS: MissionRecord[] = [
       sub("scrubber", "Environmental control / life support", "nominal", "CO₂ removal keeping pace with the compact crew cabin."),
       sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
     ],
-    dataSource: "Mission replay dataset", hasCrewData: true,
+    dataSource: "Mission dataset", hasCrewData: true,
   },
   {
     id: "NOX-03", name: "Earth Orbit Station Rotation", code: "NOX-03", destination: "earth", destinationLabel: "Earth (low orbit)", startDate: "2031-09-13",
@@ -116,7 +116,7 @@ export const MISSIONS: MissionRecord[] = [
       sub("scrubber", "Environmental control / life support", "watch", "Cabin CO₂ has crept upward since about day 30. Scrubber performance has not been diagnosed."),
       sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
     ],
-    dataSource: "Mission replay dataset", hasCrewData: true,
+    dataSource: "Mission dataset", hasCrewData: true,
   },
   {
     id: "NOX-04", name: "Mars Orbit Relay", code: "NOX-04", destination: "mars", destinationLabel: "Mars (orbit)", startDate: "2031-04-13",
@@ -129,7 +129,7 @@ export const MISSIONS: MissionRecord[] = [
       sub("scrubber", "Environmental control / life support", "watch", "Cabin CO₂ above the watch line since about day 150. Scrubber performance has not been diagnosed."),
       sub("structure", "Structure / subsystems", "nominal", "No structural or subsystem warnings."),
     ],
-    dataSource: "Mission replay dataset", hasCrewData: true,
+    dataSource: "Mission dataset", hasCrewData: true,
   },
 ];
 

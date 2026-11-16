@@ -1,6 +1,6 @@
 /** Fully synthetic ABL90-style report text used by the "Load synthetic example" button. Invented values; no real patient data. */
 export const SYNTHETIC_REPORT_TEXT = `
-RADIOMETER ABL90 SERIES
+ABL90 SERIES
 ABL90 SYNTHETIC-UNIT-0001
 INFORME PACIENTE Jeringa - J 65uL
 09:05 AM 03/21/2026 Muestra # 00001

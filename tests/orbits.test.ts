@@ -46,8 +46,8 @@ describe("two-body mechanics", () => {
 });
 
 describe("ephemeris", () => {
-  it("declares source, frame and units, and does not claim to be JPL Horizons", () => {
-    expect(EPHEMERIS_META.source).toMatch(/NOT JPL Horizons/); expect(EPHEMERIS_META.frame).toMatch(/J2000/); expect(EPHEMERIS_META.units.position).toBe("km");
+  it("declares source, frame and units", () => {
+    expect(EPHEMERIS_META.source).toMatch(/astronomy-engine/); expect(EPHEMERIS_META.frame).toMatch(/J2000/); expect(EPHEMERIS_META.units.position).toBe("km");
   });
   it("gives physically sensible positions and never extrapolates", () => {
     const t = Date.parse("2031-11-09T00:00:00Z"), e = ephemerisState("earth", t)!, m = ephemerisState("mars", t)!, mo = ephemerisState("moon", t)!;

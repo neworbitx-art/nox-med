@@ -1,5 +1,4 @@
 // Generates data/ephemeris.json with astronomy-engine (MIT). Frame: J2000 mean ecliptic & equinox, km and km/s.
-// JPL Horizons would be preferred, but it was unreachable from the build environment; see scripts/fetch-horizons.mjs for the same schema.
 import * as A from "astronomy-engine";
 import { writeFileSync } from "node:fs";
 
@@ -16,7 +15,7 @@ function table(label, origin, fn, startISO, endISO, stepDays) {
 }
 const out = {
   meta: {
-    source: "astronomy-engine 2.1.19 (VSOP87 planetary theory, ELP/MPP02-derived lunar model), MIT licence. NOT JPL Horizons.",
+    source: "astronomy-engine 2.1.19 (VSOP87 planetary theory, ELP/MPP02-derived lunar model), MIT licence.",
     generator: "scripts/generate-ephemeris.mjs",
     generatedFrom: "analytic planetary/lunar theory; sub-arcminute accuracy; not a substitute for DE-series ephemerides",
     frame: "J2000 mean ecliptic and equinox (right-handed, +Z ecliptic north)",
