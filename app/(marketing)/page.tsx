@@ -5,6 +5,7 @@ import { ROUTES } from "@/lib/routes";
 import { PUBLIC_MISSIONS } from "@/lib/marketing-content";
 import { Backdrop, Stars } from "@/components/marketing/Backdrop";
 import { DriftSchema } from "@/components/marketing/Schemas";
+import { Team } from "@/components/marketing/Team";
 
 export default function Home() {
   return (
@@ -114,6 +115,10 @@ export default function Home() {
             </div>
             <Link href={ROUTES.about} className="mk-link">About NOX <span aria-hidden>→</span></Link>
           </Reveal>
+        </div>
+        <div className="mk-wrap" id="team">
+          <Reveal><p className="mk-eyebrow" style={{ marginTop: 72 }}>The team</p><h2 className="mk-h2">The people behind NOX.</h2></Reveal>
+          <Team />
         </div>
       </section>
 

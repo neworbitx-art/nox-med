@@ -4,6 +4,7 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { Backdrop } from "@/components/marketing/Backdrop";
 import { Patch } from "@/components/marketing/Logo";
 import { ROUTES } from "@/lib/routes";
+import { Team } from "@/components/marketing/Team";
 
 export const metadata: Metadata = { title: "About", description: "NOX — New Orbit Exploration: health intelligence for long-duration human spaceflight." };
 
@@ -29,6 +30,8 @@ export default function AboutPage() {
             <Reveal delay={100}><h3>Honest data</h3><p>Every value carries its provenance and quality flag. Spacecraft readings are never presented as clinical values.</p></Reveal>
             <Reveal delay={200}><h3>Built for the crew</h3><p>Clear, calm interfaces for crew, flight surgeons and mission teams, on the ground and in flight.</p></Reveal>
           </div>
+          <Reveal><p className="mk-eyebrow" style={{ marginTop: 72 }}>The team</p></Reveal>
+          <Team />
           <div className="mk-hero-cta" style={{ marginTop: 56 }}>
             <Link href={ROUTES.demo} className="mk-btn mk-btn-primary">Explore the demo</Link>
             <Link href={`${ROUTES.demo}/about`} className="mk-btn mk-btn-ghost">Data sources &amp; methods</Link>
