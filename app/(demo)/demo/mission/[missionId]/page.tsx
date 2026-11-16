@@ -18,6 +18,7 @@ import { ATLAS_SYSTEMS } from "@/components/anatomy/BodyAtlas";
 import { GasPanel, VitalsPanel } from "@/components/anatomy/CrewVitalsGas";
 import { vitalsFor } from "@/lib/data";
 import type { Picked } from "@/components/anatomy/CinematicBody";
+import { AssessmentWorkspace } from "@/components/assessment/AssessmentWorkspace";
 import { MedicalDeviceOverlay } from "@/components/anatomy/MedicalDeviceOverlay";
 import { LEVEL_COLOR, StatusDot } from "@/components/navigator/ShipHealth";
 
@@ -132,10 +133,10 @@ export default function MissionOverview() {
           <div className="p-sec">
             <div className="p-lab mb-1.5">Body system</div>
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="Body system">
-              {OVERVIEW_SYSTEMS.map((sy) => { const on = sy.id === "cardiovascular", fut = !on;
+              {OVERVIEW_SYSTEMS.map((sy) => { const on = ATLAS_SYSTEMS.includes(sy.id as never), fut = !on;
                 return <button key={sy.id} onClick={() => on && setSystem(sy.id)} disabled={fut} aria-pressed={on && system === sy.id} data-system-option={sy.id} className="g-btn !rounded-full px-2.5 py-1 text-[11px] disabled:cursor-not-allowed disabled:opacity-40" data-on={on && system === sy.id}>{sy.label}{fut && <span className="ml-1 text-[8px] tracking-wide text-mute">FUTURE</span>}</button>; })}
             </div>
-            <p className="mt-1.5 text-[10px] text-mute">Only the cardiovascular system is analysed in this version.</p>
+            <p className="mt-1.5 text-[10px] text-mute">Cardiovascular, respiratory and blood (haematology) are analysed in this version.</p>
           </div>
           <div className="p-sec" data-testid="structure-info">
             <div className="p-lab">Selected structure</div>
@@ -145,6 +146,8 @@ export default function MissionOverview() {
           </div>
         </div>
       </section>
+
+      {hasData && aid && <AssessmentWorkspace key={`${m.id}:${aid}`} missionId={m.id} missionCode={m.code} astronautId={aid} crewLabel={`${crew.callsign} (${crew.code})`} role={crew.role} />}
 
       <div className="mt-3 grid gap-3 xl:grid-cols-2">
           <Card title="Spacecraft environment and engineering" subtitle={`${m.code} · ${m.dataSource}`}>

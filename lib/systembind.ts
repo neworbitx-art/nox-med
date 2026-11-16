@@ -13,8 +13,8 @@ export type Provenance = "recorded" | "imported" | "calculated";
 export interface Binding { id: string; label: string; src: "lab" | "vital" | "env" | "fio2"; key?: MetricKey; vital?: VKey; env?: "co2Mmhg"; note?: string; href: string }
 export interface BoundRow { id: string; label: string; value: string | null; unit: string; collected: string | null; trend: "up" | "down" | "flat" | null; quality: Quality; qualityNote: string; provenance: Provenance[]; sampleType?: string; note?: string; href: string }
 
-const lab = (key: MetricKey, label?: string, note?: string): Binding => ({ id: key, label: label ?? METRICS[key].label, src: "lab", key, note, href: `/blood-gas?m=${key}` });
-const vit = (vital: VKey, label?: string): Binding => ({ id: vital, label: label ?? V[vital].label, src: "vital", vital, href: `/wearables?v=${vital}` });
+const lab = (key: MetricKey, label?: string, note?: string): Binding => ({ id: key, label: label ?? METRICS[key].label, src: "lab", key, note, href: `/demo/blood-gas?m=${key}` });
+const vit = (vital: VKey, label?: string): Binding => ({ id: vital, label: label ?? V[vital].label, src: "vital", vital, href: `/demo/wearables?v=${vital}` });
 export const BINDINGS: Record<BoundSystem, Binding[]> = {
   cardiovascular: [vit("restingHr", "Heart rate (resting)"), vit("meanHr", "Heart rate (24 h mean)"), vit("systolic", "Blood pressure, systolic"), vit("diastolic", "Blood pressure, diastolic"), lab("tHb", "Hemoglobin (tHb)"), lab("Hct", "Hematocrit"), lab("Lac", "Lactate"), lab("K", "Potassium"), lab("iCa", "Ionized calcium")],
   respiratory: [vit("respRate", "Respiratory rate"), vit("spo2", "SpO₂ (pulse oximetry)"), lab("pO2", "Arterial pO₂", "interpreted only for arterial / capillary samples"), lab("pCO2", "Arterial pCO₂", "interpreted only for arterial / capillary samples"), lab("pH"), lab("HCO3", "Bicarbonate (cHCO₃⁻)"), { id: "fio2", label: "FiO₂ (inspired fraction)", src: "fio2", note: "only when recorded with the sample", href: "/blood-gas" }, { id: "cabinCo2", label: "Cabin CO₂", src: "env", env: "co2Mmhg", note: "ship sensor, not a clinical value", href: "/environment" }],
