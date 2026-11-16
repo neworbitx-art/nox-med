@@ -155,7 +155,7 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 .mk-page-hero h1, .mk-hero-cta { position:relative; }
 
 /* ── NOX MED innovation (home) ── */
-.mk-med-home { background:#000; }
+.mk-med-home { background:#000; isolation:isolate; }
 .mk-pillars { list-style:none; margin:34px 0 0; padding:0; display:grid; gap:0; } .mk-pillars li { padding:16px 0 16px 20px; border-left:2px solid var(--cyan); margin-bottom:14px; display:grid; gap:2px; } .mk-pillars b { font-size:15px; letter-spacing:.14em; text-transform:uppercase; } .mk-pillars span { color:var(--mute); font-size:14px; }
 .mk-cta-row { display:flex; flex-wrap:wrap; gap:8px 32px; } .mk-link-quiet { color:var(--mute); }
 .mk-footer-base { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
@@ -188,7 +188,7 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 @keyframes mk-scene-in { from { opacity:0; } to { opacity:1; } }
 
 /* ── NOX MED (minimal) ── */
-.mk-med-home { background:#000; }
+.mk-med-home { background:#000; isolation:isolate; }
 .mk-med-intro { text-align:center; }
 .mk-glad { font-size:clamp(12px,1.3vw,15px); letter-spacing:.34em; text-transform:uppercase; color:var(--mute); }
 .mk-med-title { font-size:clamp(56px,11vw,150px); line-height:.95; font-weight:800; letter-spacing:-.03em; margin-top:10px; color:#fff; }
@@ -206,7 +206,7 @@ html { scroll-behavior:smooth; } section[id] { scroll-margin-top:90px; }
 .mk-fine { margin-top:20px; font-size:12px; color:var(--mute); }
 
 /* logo in a circle */
-.mk-logo-circle { display:grid; place-items:center; border-radius:50%; background:#000; border:1px solid rgba(255,255,255,.28); overflow:hidden; flex:none; }
+.mk-logo-circle { display:grid; place-items:center; border-radius:50%; background:#000; border:0; flex:none; -webkit-mask-image:radial-gradient(circle,#000 58%,rgba(0,0,0,0) 71%); mask-image:radial-gradient(circle,#000 58%,rgba(0,0,0,0) 71%); }
 .mk-logo-circle .mk-logo-img { display:block; }
 
 /* team carousel */

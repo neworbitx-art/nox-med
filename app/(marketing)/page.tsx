@@ -78,6 +78,7 @@ export default function Home() {
       </section>
 
       <section id="nox-med" className="mk-section mk-med-home">
+        <Backdrop src="/backgrounds/control.jpg" variant="c" dim={0.34} position="50% 40%" />
         <div className="mk-wrap mk-med-intro">
           <Reveal>
             <p className="mk-glad">We are glad to present you</p>
